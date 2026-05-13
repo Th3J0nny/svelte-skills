@@ -4,19 +4,29 @@
 # This hook hard-blocks (exit 2) the Bash call and tells Claude which tool to use.
 # See: https://github.com/anthropics/claude-code/issues/19649
 #
-# Polish strategy (regex-only, no external deps):
+# Preferred tools (NOT blocked — use these freely):
+#   - fff MCP (`mcp__fff__grep`, `mcp__fff__find_files`, `mcp__fff__multi_grep`) — file search/read.
+#   - Built-in Grep / Read / Glob — fallback when fff unavailable.
+#   - jq — JSON parsing/shaping. This hook itself depends on jq (line below).
+#         Prefer jq over `node -e` / `python -c` for JSON: shorter, no quoting hell,
+#         no subprocess-bypass surface. Auto-allowed in settings via `Bash(jq:*)`.
+#
+# Polish strategy (regex-only, no external deps beyond jq):
 #   - Mirror Claude Code's internal stripping of process wrappers (timeout, time, nice,
 #     nohup, stdbuf, xargs) and VAR=value prefixes before first-word extraction.
 #   - Catch known bypass vectors: absolute paths, backslash escape, `command` builtin,
 #     `exec`/`eval`/`env` wrappers, `bash -c "<banned>"`, command substitution `$(...)`,
 #     chained subcommands after `&&` / `||` / `;` / `|`, `node -e` / `python -c`
-#     shelling out to subprocess APIs.
+#     shelling out to subprocess APIs, sed used as a reader (`-n`, Np/N,Mp/$p).
 #   - For a proper bash AST parser, see oryband/claude-code-auto-approve (shfmt + jq).
 
 INPUT=$(cat)
 COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty')
 [ -z "$COMMAND" ] && exit 0
 
+# BANNED: tools the hook hard-blocks. Note: `jq` and `fff` are deliberately NOT here —
+# they are preferred tools. `sed` is also absent at this level; sed READS are caught
+# in a dedicated sed case-arm below so substitution stays allowed.
 BANNED='grep|egrep|fgrep|rg|cat|head|tail|find|awk|wc'
 
 # --- Pre-extraction scans (catch wrapped invocations) -------------------------
