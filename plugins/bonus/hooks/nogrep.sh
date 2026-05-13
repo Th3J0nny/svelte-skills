@@ -34,40 +34,51 @@ BANNED='grep|egrep|fgrep|rg|cat|head|tail|find|awk|wc'
 # node/deno/bun -e "...<subprocess API>..." shelling out to a banned tool.
 # Regex uses bracket-charclass form (`child[_]process`) so the literal banned-API
 # substring is not present in this file — avoids editor/source-scanner false positives.
-if echo "$COMMAND" | grep -qE "(^|[[:space:]])(node|deno|bun)[[:space:]]+(-e|--eval)[[:space:]]+[\"'].*(child[_]process|exec[S]ync|spawn[S]ync)"; then
+RE_NODE_SHELLOUT="(^|[[:space:]])(node|deno|bun)[[:space:]]+(-e|--eval)[[:space:]]+[\"'].*(child[_]process|exec[S]ync|spawn[S]ync)"
+if [[ "$COMMAND" =~ $RE_NODE_SHELLOUT ]]; then
   echo "BLOCKED: node/deno/bun -e invoking subprocess APIs. Use the dedicated tool (Grep/Read/Glob) instead of shelling out from inside an embedded JS script." >&2
   exit 2
 fi
-if echo "$COMMAND" | grep -qE "(^|[[:space:]])(python|python3)[[:space:]]+(-c)[[:space:]]+[\"'].*subprocess"; then
+RE_PY_SHELLOUT="(^|[[:space:]])(python|python3)[[:space:]]+(-c)[[:space:]]+[\"'].*subprocess"
+if [[ "$COMMAND" =~ $RE_PY_SHELLOUT ]]; then
   echo "BLOCKED: python -c invoking subprocess. Use the dedicated tool (Grep/Read/Glob) instead of shelling out from inside an embedded Python script." >&2
   exit 2
 fi
 
 # bash/sh/zsh/dash -c "<banned>..." — banned tool inside a wrapped shell-out.
-if echo "$COMMAND" | grep -qE "(^|[[:space:]])(bash|sh|zsh|dash)[[:space:]]+-c[[:space:]]+[\"'][[:space:]]*(\\\\?[A-Za-z0-9_./-]*/)?(${BANNED})([^A-Za-z0-9_]|$)"; then
+RE_BASHC_BANNED="(^|[[:space:]])(bash|sh|zsh|dash)[[:space:]]+-c[[:space:]]+[\"'][[:space:]]*(\\\\?[A-Za-z0-9_./-]*/)?(${BANNED})([^A-Za-z0-9_]|$)"
+if [[ "$COMMAND" =~ $RE_BASHC_BANNED ]]; then
   echo "BLOCKED: Banned tool invoked via 'bash -c' / 'sh -c'. Use the dedicated tool (Grep/Read/Glob) at the top level instead." >&2
   exit 2
 fi
 
 # bash/sh/zsh/dash -c "sed -n …" / "sed … Np …" — sed used as a reader inside a wrapped shell-out.
 # Substitution forms (`sed 's/x/y/' file`) are still allowed; only -n or bare Np/N,Mp/$p triggers.
-# NOTE: char class is [\"'] not [\"\x27] — grep -E does not honor \x escapes.
-if echo "$COMMAND" | grep -qE "(^|[[:space:]])(bash|sh|zsh|dash)[[:space:]]+-c[[:space:]]+[\"'][^\"']*sed[[:space:]]+([^[:space:]]+[[:space:]]+)*-n([[:space:]]|\$)"; then
+# NOTE: char class is [\"'] not [\"\x27] — POSIX ERE does not honor \x escapes.
+RE_BASHC_SED_N="(^|[[:space:]])(bash|sh|zsh|dash)[[:space:]]+-c[[:space:]]+[\"'][^\"']*sed[[:space:]]+([^[:space:]]+[[:space:]]+)*-n([[:space:]]|\$)"
+if [[ "$COMMAND" =~ $RE_BASHC_SED_N ]]; then
   echo "BLOCKED: 'sed -n' inside bash -c / sh -c is a read. Use the Read tool (offset/limit) instead." >&2
   exit 2
 fi
-if echo "$COMMAND" | grep -qE "(^|[[:space:]])(bash|sh|zsh|dash)[[:space:]]+-c[[:space:]]+[\"'][^\"']*sed[[:space:]]+([^[:space:]]+[[:space:]]+)*(-e[[:space:]]+|--expression[[:space:]=])?[\"']?(\\\$|[0-9]+)(,(\\\$|[0-9]+))?p[\"']?([[:space:]]|\$)"; then
+RE_BASHC_SED_NP="(^|[[:space:]])(bash|sh|zsh|dash)[[:space:]]+-c[[:space:]]+[\"'][^\"']*sed[[:space:]]+([^[:space:]]+[[:space:]]+)*(-e[[:space:]]+|--expression[[:space:]=])?[\"']?(\\\$|[0-9]+)(,(\\\$|[0-9]+))?p[\"']?([[:space:]]|\$)"
+if [[ "$COMMAND" =~ $RE_BASHC_SED_NP ]]; then
   echo "BLOCKED: 'sed … Np/N,Mp/\$p' inside bash -c / sh -c is a read. Use the Read tool (offset/limit) instead." >&2
   exit 2
 fi
 
 # Command substitution: `$(grep ...)` or backtick-wrapped. Catches absolute-path /
 # backslash-escaped variants of the banned tool name inside the substitution.
-if echo "$COMMAND" | grep -qE "\\\$\\([[:space:]]*(\\\\?[A-Za-z0-9_./-]*/)?(${BANNED})([^A-Za-z0-9_]|$)"; then
+# Also catches wrapper invocations (`$(command grep ...)`, `$(timeout 5 grep ...)`)
+# and env-assignment prefixes (`$(FOO=1 grep ...)`, `$(env FOO=1 rg ...)`).
+# Wrapper list mirrors normalize_first() below.
+WRAP_PREFIX='((timeout|time|nice|nohup|stdbuf|env|exec|eval|builtin|xargs|command)[[:space:]]+(-[^[:space:]]+[[:space:]]+|[0-9]+[[:space:]]+)*)?([A-Za-z_][A-Za-z0-9_]*=[^[:space:]]+[[:space:]]+)*'
+RE_DOLLAR_SUB="\\\$\\([[:space:]]*${WRAP_PREFIX}(\\\\?[A-Za-z0-9_./-]*/)?(${BANNED})([^A-Za-z0-9_]|$)"
+if [[ "$COMMAND" =~ $RE_DOLLAR_SUB ]]; then
   echo "BLOCKED: Banned tool inside command substitution \$(...). Use the dedicated tool (Grep/Read/Glob)." >&2
   exit 2
 fi
-if echo "$COMMAND" | grep -qE "\`[[:space:]]*(\\\\?[A-Za-z0-9_./-]*/)?(${BANNED})([^A-Za-z0-9_]|$)"; then
+RE_BACKTICK_SUB="\`[[:space:]]*${WRAP_PREFIX}(\\\\?[A-Za-z0-9_./-]*/)?(${BANNED})([^A-Za-z0-9_]|$)"
+if [[ "$COMMAND" =~ $RE_BACKTICK_SUB ]]; then
   echo "BLOCKED: Banned tool inside backtick command substitution. Use the dedicated tool (Grep/Read/Glob)." >&2
   exit 2
 fi
@@ -137,7 +148,8 @@ while IFS= read -r SUB; do
       ;;
     git)
       # Block mutating git commands; allow read-only inspection and git mv.
-      if echo "$SUB" | grep -qE '(^|[[:space:]])git[[:space:]]+(add|commit|push|pull|fetch|merge|rebase|reset|restore|checkout|switch|clean|stash|tag|cherry-pick|revert|am|apply|rm|clone|init|config|remote[[:space:]]+(add|remove|rename|set-url))([^A-Za-z0-9_]|$)'; then
+      RE_GIT_MUT='(^|[[:space:]])git[[:space:]]+(add|commit|push|pull|fetch|merge|rebase|reset|restore|checkout|switch|clean|stash|tag|cherry-pick|revert|am|apply|rm|clone|init|config|remote[[:space:]]+(add|remove|rename|set-url))([^A-Za-z0-9_]|$)'
+      if [[ "$SUB" =~ $RE_GIT_MUT ]]; then
         echo "BLOCKED: Mutating git command. Use gh (auto-allowed) for remote state, or suggest the user run ! git <command> locally." >&2
         exit 2
       fi
@@ -163,11 +175,13 @@ while IFS= read -r SUB; do
       #   1. `-n` flag — sed reading mode (default-print suppressed; almost always a Read use).
       #   2. Bare print-address script: 'Np', "N,Mp", $p, 5p, 1,5p — quoted or unquoted, with/without -e/--expression.
       # Substitution (sed 's/x/y/' file, sed -i 's/x/y/') is NOT matched and remains legitimate Bash use.
-      if echo "$SUB" | grep -qE 'sed[[:space:]]+([^[:space:]]+[[:space:]]+)*-n([[:space:]]|$)'; then
+      RE_SED_N='sed[[:space:]]+([^[:space:]]+[[:space:]]+)*-n([[:space:]]|$)'
+      if [[ "$SUB" =~ $RE_SED_N ]]; then
         echo "BLOCKED: Use the Read tool instead of Bash 'sed -n' for reading file ranges. Read supports: offset, limit. Zero permission clicks." >&2
         exit 2
       fi
-      if echo "$SUB" | grep -qE "sed[[:space:]]+([^[:space:]]+[[:space:]]+)*(-e[[:space:]]+|--expression[[:space:]=])?[\"']?(\\\$|[0-9]+)(,(\\\$|[0-9]+))?p[\"']?([[:space:]]|$)"; then
+      RE_SED_NP="sed[[:space:]]+([^[:space:]]+[[:space:]]+)*(-e[[:space:]]+|--expression[[:space:]=])?[\"']?(\\\$|[0-9]+)(,(\\\$|[0-9]+))?p[\"']?([[:space:]]|$)"
+      if [[ "$SUB" =~ $RE_SED_NP ]]; then
         echo "BLOCKED: Use the Read tool instead of Bash sed for reading file ranges (Np / N,Mp / \$p). Read supports: offset, limit. Zero permission clicks." >&2
         exit 2
       fi
