@@ -1,6 +1,6 @@
 ---
 name: nogrep
-description: "Use fff MCP / Grep / Read / Glob — never Bash grep/cat/find/head/tail/sed/awk/rg/wc — for file search and read. Dedicated tools are auto-allowed; Bash equivalents need approval every time. Auto-invoke when searching, reading, or counting in files."
+description: "Use fff MCP / Grep / Read / Glob — never Bash grep/cat/find/head/tail/sed/awk/rg/wc — for file search and read. Use jq for JSON parsing/shaping (not node -e / python -c). Dedicated tools are auto-allowed; Bash equivalents need approval every time. Auto-invoke when searching, reading, or counting in files."
 user-invocable: true
 ---
 
@@ -18,9 +18,16 @@ The `bonus` plugin ships a hook (`bonus/hooks/nogrep.sh`) that hard-blocks the w
 
 ## Tool Preference Order
 
+### For file search / read
+
 1. **[fff](https://fff.dmtrkovalenko.dev/) MCP** — first choice for any file search or content grep inside a git-indexed directory. Frecency-ranked results (frequent/recent files first, dirty files boosted), git-aware, constraint-aware. See README.md → "fff instead of grep/bash etc.".
 2. **Built-in `Grep` / `Read` / `Glob`** — fallback when fff isn't installed or the search target lies outside the git tree.
 3. **Bash** — only for the legitimate uses listed at the bottom of this skill.
+
+### For JSON parsing / shaping
+
+1. **`jq`** (auto-allowed via `Bash(jq:*)`) — first choice for any JSON work: reshaping API output, extracting fields, building hook input fixtures, constructing test payloads. Shorter than `node -e` / `python -c`, no quoting hell, no subprocess-bypass risk.
+2. **`node -e` / `python -c`** — fallback only when the logic needs language features jq lacks (complex control flow, regex flavors, library calls). NEVER for shelling out — hook blocks subprocess APIs.
 
 ## The Rule
 
@@ -85,8 +92,26 @@ These are legitimate Bash uses — either they have no dedicated tool equivalent
 - **build/dev tools**: `mvn`, `npx`, `pnpx`, etc.
 - **Process management**: `lsof`, `kill`, `pkill`
 - **File mutations**: `mkdir`, `cp`, `git mv`
-- **Environment**: `which`, `node -e`, `java -version`
+- **Environment**: `which`, `java -version`
+- **`jq`** (auto-allowed via `Bash(jq:*)`) — first-class JSON tool (see "For JSON parsing / shaping" above). Use it.
+- **`node -e` / `python -c`** — allowed only for in-process logic (math, control flow). NOT for shelling out to banned tools via Node's subprocess APIs or Python's subprocess module. The hook hard-blocks the shell-out case. For JSON, prefer `jq`.
 - **Simple `ls`** — Bash `ls` is permitted for narrow, read-only directory listing, but fff MCP (`mcp__fff__find_files`) is preferred for searching/reading files.
+
+## Bypass attempts the hook will block
+
+Do NOT switch to these when the obvious Bash form is blocked. Switch to the dedicated tool (Grep/Read/Glob/fff).
+
+| Vector | Example | Why banned |
+|---|---|---|
+| `command` builtin | `command grep foo` | Bypass vector — banned outright (hook + global `permissions.deny`) |
+| Absolute path | `/usr/bin/grep`, `/bin/cat` | Hook normalises to basename and re-checks |
+| Backslash escape | `\grep`, `\cat` | Hook strips leading `\` before checking |
+| `xargs <banned>` | `find … \| xargs grep` | Hook splits on `\|` and normalizes — `xargs` is in the wrapper list, so the next token (`grep`) becomes the effective first word and is blocked |
+| Shell wrapper | `bash -c "grep …"`, `sh -c`, `zsh -c` | Hook scans the quoted argument for banned words |
+| Node shell-out | `node -e "<Node subprocess API>('grep …')"` | Hook hard-blocks `node -e` invoking subprocess APIs |
+| Python shell-out | `python3 -c "<subprocess module call>"` | Hook hard-blocks `python -c` invoking `subprocess` |
+
+If you find a new bypass vector the hook misses, harden `plugins/bonus/hooks/nogrep.sh` — do NOT silently use the bypass to do the work. The whole point of this skill + hook pair is that bypasses are bugs to fix, not loopholes to exploit.
 
 ## git Commands
 
