@@ -134,6 +134,12 @@ Source: [Claude Code skills docs](https://code.claude.com/docs/en/skills)
 
 - For forward-looking Svelte 5 or SvelteKit specific skills, see [spences10/svelte-skills-kit](https://github.com/spences10/svelte-skills-kit).
 - [mattpocock/skills](https://github.com/mattpocock/skills) — standalone skills including `grill-me` (get relentlessly interviewed about a plan or design — or use it to grill the agent about its own plan before it starts implementing).
+- [JuliusBrussee/caveman](https://github.com/JuliusBrussee/caveman) — ultra-compressed communication mode (caveman-style speech, fragments, no fluff). Claims to cut token usage ~75% while preserving full technical accuracy. Install as a separate marketplace:
+
+  ```
+  /plugin marketplace add JuliusBrussee/caveman
+  /plugin install caveman
+  ```
 
 ## Recommended tooling
 
