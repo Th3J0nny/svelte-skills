@@ -34,18 +34,18 @@ if echo "$COMMAND" | grep -qE '(^|[[:space:]])(python|python3)[[:space:]]+(-c)[[
 fi
 
 # bash/sh/zsh/dash -c "<banned>..." — banned tool inside a wrapped shell-out.
-if echo "$COMMAND" | grep -qE "(^|[[:space:]])(bash|sh|zsh|dash)[[:space:]]+-c[[:space:]]+[\"\x27][[:space:]]*(\\\\?[A-Za-z0-9_./-]*/)?(${BANNED})\b"; then
+if echo "$COMMAND" | grep -qE "(^|[[:space:]])(bash|sh|zsh|dash)[[:space:]]+-c[[:space:]]+[\"\x27][[:space:]]*(\\\\?[A-Za-z0-9_./-]*/)?(${BANNED})([^A-Za-z0-9_]|$)"; then
   echo "BLOCKED: Banned tool invoked via 'bash -c' / 'sh -c'. Use the dedicated tool (Grep/Read/Glob) at the top level instead." >&2
   exit 2
 fi
 
 # Command substitution: `$(grep ...)` or backtick-wrapped. Catches absolute-path /
 # backslash-escaped variants of the banned tool name inside the substitution.
-if echo "$COMMAND" | grep -qE "\\\$\\([[:space:]]*(\\\\?[A-Za-z0-9_./-]*/)?(${BANNED})\b"; then
+if echo "$COMMAND" | grep -qE "\\\$\\([[:space:]]*(\\\\?[A-Za-z0-9_./-]*/)?(${BANNED})([^A-Za-z0-9_]|$)"; then
   echo "BLOCKED: Banned tool inside command substitution \$(...). Use the dedicated tool (Grep/Read/Glob)." >&2
   exit 2
 fi
-if echo "$COMMAND" | grep -qE "\`[[:space:]]*(\\\\?[A-Za-z0-9_./-]*/)?(${BANNED})\b"; then
+if echo "$COMMAND" | grep -qE "\`[[:space:]]*(\\\\?[A-Za-z0-9_./-]*/)?(${BANNED})([^A-Za-z0-9_]|$)"; then
   echo "BLOCKED: Banned tool inside backtick command substitution. Use the dedicated tool (Grep/Read/Glob)." >&2
   exit 2
 fi
@@ -66,21 +66,31 @@ normalize_first() {
   first=$(printf '%s' "$cmd" | awk '{print $1}')
   first="${first#\\}"
   case "$first" in */*) first=$(basename "$first") ;; esac
-  # Unwrap one level of process wrappers — repeat once for nested wrappers
-  case "$first" in
-    timeout|time|nice|nohup|stdbuf|env|exec|eval|builtin|xargs)
-      local rest
-      rest=$(printf '%s' "$cmd" | sed -E "s/^[[:space:]]*$first([[:space:]]+|$)//")
-      # Skip leading flag tokens AND positional-number tokens (e.g. `timeout 30`, `nice -n 10`)
-      # before the wrapped command. Each iteration drops one token starting with `-` or digit.
-      while [[ "$rest" =~ ^[[:space:]]*(-|[0-9]) ]]; do
-        rest=$(printf '%s' "$rest" | sed -E 's/^[[:space:]]*[^[:space:]]+[[:space:]]*//')
-      done
-      first=$(printf '%s' "$rest" | awk '{print $1}')
-      first="${first#\\}"
-      case "$first" in */*) first=$(basename "$first") ;; esac
-      ;;
-  esac
+  # Unwrap process wrappers, repeating for chained wrappers like `timeout 5 nice -n 10 grep`.
+  # Iteration cap guards against pathological input.
+  local _i=0
+  while [ "$_i" -lt 8 ]; do
+    case "$first" in
+      timeout|time|nice|nohup|stdbuf|env|exec|eval|builtin|xargs) ;;
+      *) break ;;
+    esac
+    local rest
+    rest=$(printf '%s' "$cmd" | sed -E "s/^[[:space:]]*$first([[:space:]]+|$)//")
+    # Skip leading flag tokens AND positional-number tokens (e.g. `timeout 30`, `nice -n 10`)
+    # before the wrapped command. Each iteration drops one token starting with `-` or digit.
+    while [[ "$rest" =~ ^[[:space:]]*(-|[0-9]) ]]; do
+      rest=$(printf '%s' "$rest" | sed -E 's/^[[:space:]]*[^[:space:]]+[[:space:]]*//')
+    done
+    # Also strip any VAR=value assignments that a wrapper like `env` left behind.
+    while [[ "$rest" =~ ^[[:space:]]*[A-Za-z_][A-Za-z0-9_]*= ]]; do
+      rest=$(printf '%s' "$rest" | sed -E 's/^[[:space:]]*[A-Za-z_][A-Za-z0-9_]*=[^[:space:]]*[[:space:]]*//')
+    done
+    cmd="$rest"
+    first=$(printf '%s' "$rest" | awk '{print $1}')
+    first="${first#\\}"
+    case "$first" in */*) first=$(basename "$first") ;; esac
+    _i=$((_i + 1))
+  done
   printf '%s' "$first"
 }
 
@@ -103,7 +113,7 @@ while IFS= read -r SUB; do
       ;;
     git)
       # Block mutating git commands; allow read-only inspection and git mv.
-      if echo "$SUB" | grep -qE '(^|[[:space:]])git[[:space:]]+(add|commit|push|pull|fetch|merge|rebase|reset|restore|checkout|switch|clean|stash|tag|cherry-pick|revert|am|apply|rm|clone|init|config|remote[[:space:]]+(add|remove|rename|set-url))\b'; then
+      if echo "$SUB" | grep -qE '(^|[[:space:]])git[[:space:]]+(add|commit|push|pull|fetch|merge|rebase|reset|restore|checkout|switch|clean|stash|tag|cherry-pick|revert|am|apply|rm|clone|init|config|remote[[:space:]]+(add|remove|rename|set-url))([^A-Za-z0-9_]|$)'; then
         echo "BLOCKED: Mutating git command. Use gh (auto-allowed) for remote state, or suggest the user run ! git <command> locally." >&2
         exit 2
       fi

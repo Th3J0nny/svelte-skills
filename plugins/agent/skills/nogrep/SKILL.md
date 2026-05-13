@@ -98,7 +98,7 @@ Do NOT switch to these when the obvious Bash form is blocked. Switch to the dedi
 | `command` builtin | `command grep foo` | Bypass vector — banned outright (hook + global `permissions.deny`) |
 | Absolute path | `/usr/bin/grep`, `/bin/cat` | Hook normalises to basename and re-checks |
 | Backslash escape | `\grep`, `\cat` | Hook strips leading `\` before checking |
-| `xargs <banned>` | `find … \| xargs grep` | Caught by the piped-tool regex |
+| `xargs <banned>` | `find … \| xargs grep` | Hook splits on `\|` and normalizes — `xargs` is in the wrapper list, so the next token (`grep`) becomes the effective first word and is blocked |
 | Shell wrapper | `bash -c "grep …"`, `sh -c`, `zsh -c` | Hook scans the quoted argument for banned words |
 | Node shell-out | `node -e "<Node subprocess API>('grep …')"` | Hook hard-blocks `node -e` invoking subprocess APIs |
 | Python shell-out | `python3 -c "<subprocess module call>"` | Hook hard-blocks `python -c` invoking `subprocess` |

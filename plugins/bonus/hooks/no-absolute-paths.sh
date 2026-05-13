@@ -16,8 +16,13 @@ ROOT="${CLAUDE_PROJECT_DIR:-$PWD}"
 # Compute the tilde-form equivalent of ROOT (e.g. /Users/you/foo → ~/foo) so
 # `cd ~/path/to/project` is caught alongside `cd /Users/you/path/to/project`.
 TILDE_ROOT=""
-if [ -n "$HOME" ] && [ "${ROOT#$HOME/}" != "$ROOT" ]; then
-  TILDE_ROOT="~/${ROOT#$HOME/}"
+if [ -n "$HOME" ]; then
+  if [ "$ROOT" = "$HOME" ]; then
+    TILDE_ROOT="~"
+  elif [ "${ROOT#"$HOME"/}" != "$ROOT" ]; then
+    # shellcheck disable=SC2088  # literal `~` character is intended, no expansion
+    TILDE_ROOT="~/${ROOT#"$HOME"/}"
+  fi
 fi
 
 # Block if the command references the project root as an absolute path OR its
