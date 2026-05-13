@@ -85,8 +85,25 @@ These are legitimate Bash uses — either they have no dedicated tool equivalent
 - **build/dev tools**: `mvn`, `npx`, `pnpx`, etc.
 - **Process management**: `lsof`, `kill`, `pkill`
 - **File mutations**: `mkdir`, `cp`, `git mv`
-- **Environment**: `which`, `node -e`, `java -version`
+- **Environment**: `which`, `java -version`
+- **`node -e` / `python -c`** — allowed only for in-process logic (math, JSON shaping). NOT for shelling out to banned tools via Node's subprocess APIs or Python's subprocess module. The hook hard-blocks the shell-out case.
 - **Simple `ls`** — Bash `ls` is permitted for narrow, read-only directory listing, but fff MCP (`mcp__fff__find_files`) is preferred for searching/reading files.
+
+## Bypass attempts the hook will block
+
+Do NOT switch to these when the obvious Bash form is blocked. Switch to the dedicated tool (Grep/Read/Glob/fff).
+
+| Vector | Example | Why banned |
+|---|---|---|
+| `command` builtin | `command grep foo` | Bypass vector — banned outright (hook + global `permissions.deny`) |
+| Absolute path | `/usr/bin/grep`, `/bin/cat` | Hook normalises to basename and re-checks |
+| Backslash escape | `\grep`, `\cat` | Hook strips leading `\` before checking |
+| `xargs <banned>` | `find … \| xargs grep` | Caught by the piped-tool regex |
+| Shell wrapper | `bash -c "grep …"`, `sh -c`, `zsh -c` | Hook scans the quoted argument for banned words |
+| Node shell-out | `node -e "<Node subprocess API>('grep …')"` | Hook hard-blocks `node -e` invoking subprocess APIs |
+| Python shell-out | `python3 -c "<subprocess module call>"` | Hook hard-blocks `python -c` invoking `subprocess` |
+
+If you find a new bypass vector the hook misses, harden `plugins/bonus/hooks/nogrep.sh` — do NOT silently use the bypass to do the work. The whole point of this skill + hook pair is that bypasses are bugs to fix, not loopholes to exploit.
 
 ## git Commands
 

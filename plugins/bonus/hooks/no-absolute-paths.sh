@@ -13,10 +13,21 @@ COMMAND=$(echo "$INPUT" | jq -r '.tool_input.command // empty')
 ROOT="${CLAUDE_PROJECT_DIR:-$PWD}"
 [ -z "$ROOT" ] && exit 0
 
-# Block if the command references the project root as an absolute path.
-# `grep -F` for a literal substring match — no regex surprises with slashes.
+# Compute the tilde-form equivalent of ROOT (e.g. /Users/you/foo → ~/foo) so
+# `cd ~/path/to/project` is caught alongside `cd /Users/you/path/to/project`.
+TILDE_ROOT=""
+if [ -n "$HOME" ] && [ "${ROOT#$HOME/}" != "$ROOT" ]; then
+  TILDE_ROOT="~/${ROOT#$HOME/}"
+fi
+
+# Block if the command references the project root as an absolute path OR its
+# tilde-form. `grep -F` for literal substring — no regex surprises with slashes.
 if echo "$COMMAND" | grep -qF "$ROOT"; then
   echo "BLOCKED: command contains absolute path \"$ROOT\". cwd IS already that path. Use relative paths from cwd (e.g. 'src/lib/foo.ts' not '$ROOT/src/lib/foo.ts', 'git diff' not 'git -C $ROOT diff'). Prepending project-root absolute paths bloats permissions.allow with single-use entries — see anthropics/claude-code#18200." >&2
+  exit 2
+fi
+if [ -n "$TILDE_ROOT" ] && echo "$COMMAND" | grep -qF "$TILDE_ROOT"; then
+  echo "BLOCKED: command contains tilde-form project root \"$TILDE_ROOT\". cwd IS already that path. Use relative paths from cwd. Prepending project-root paths (tilde-form or absolute) bloats permissions.allow with single-use entries — see anthropics/claude-code#18200." >&2
   exit 2
 fi
 
