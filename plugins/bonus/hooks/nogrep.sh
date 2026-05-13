@@ -34,17 +34,17 @@ BANNED='grep|egrep|fgrep|rg|cat|head|tail|find|awk|wc'
 # node/deno/bun -e "...<subprocess API>..." shelling out to a banned tool.
 # Regex uses bracket-charclass form (`child[_]process`) so the literal banned-API
 # substring is not present in this file — avoids editor/source-scanner false positives.
-if echo "$COMMAND" | grep -qE '(^|[[:space:]])(node|deno|bun)[[:space:]]+(-e|--eval)[[:space:]]+["\x27].*(child[_]process|exec[S]ync|spawn[S]ync)'; then
+if echo "$COMMAND" | grep -qE "(^|[[:space:]])(node|deno|bun)[[:space:]]+(-e|--eval)[[:space:]]+[\"'].*(child[_]process|exec[S]ync|spawn[S]ync)"; then
   echo "BLOCKED: node/deno/bun -e invoking subprocess APIs. Use the dedicated tool (Grep/Read/Glob) instead of shelling out from inside an embedded JS script." >&2
   exit 2
 fi
-if echo "$COMMAND" | grep -qE '(^|[[:space:]])(python|python3)[[:space:]]+(-c)[[:space:]]+["\x27].*subprocess'; then
+if echo "$COMMAND" | grep -qE "(^|[[:space:]])(python|python3)[[:space:]]+(-c)[[:space:]]+[\"'].*subprocess"; then
   echo "BLOCKED: python -c invoking subprocess. Use the dedicated tool (Grep/Read/Glob) instead of shelling out from inside an embedded Python script." >&2
   exit 2
 fi
 
 # bash/sh/zsh/dash -c "<banned>..." — banned tool inside a wrapped shell-out.
-if echo "$COMMAND" | grep -qE "(^|[[:space:]])(bash|sh|zsh|dash)[[:space:]]+-c[[:space:]]+[\"\x27][[:space:]]*(\\\\?[A-Za-z0-9_./-]*/)?(${BANNED})([^A-Za-z0-9_]|$)"; then
+if echo "$COMMAND" | grep -qE "(^|[[:space:]])(bash|sh|zsh|dash)[[:space:]]+-c[[:space:]]+[\"'][[:space:]]*(\\\\?[A-Za-z0-9_./-]*/)?(${BANNED})([^A-Za-z0-9_]|$)"; then
   echo "BLOCKED: Banned tool invoked via 'bash -c' / 'sh -c'. Use the dedicated tool (Grep/Read/Glob) at the top level instead." >&2
   exit 2
 fi
@@ -122,7 +122,6 @@ normalize_first() {
 # Conservative: treat the splitters as plain text — quoted strings containing
 # `&&`/`;` may false-positive but the case-arm-default exit 0 keeps the hook
 # from blocking unrelated commands.
-NL=$'\n'
 SUBCMDS=$(printf '%s' "$COMMAND" | sed -E 's/(&&|\|\||;|\|)/\n/g')
 
 while IFS= read -r SUB; do
