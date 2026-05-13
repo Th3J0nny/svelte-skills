@@ -39,6 +39,18 @@ if echo "$COMMAND" | grep -qE "(^|[[:space:]])(bash|sh|zsh|dash)[[:space:]]+-c[[
   exit 2
 fi
 
+# bash/sh/zsh/dash -c "sed -n …" / "sed … Np …" — sed used as a reader inside a wrapped shell-out.
+# Substitution forms (`sed 's/x/y/' file`) are still allowed; only -n or bare Np/N,Mp/$p triggers.
+# NOTE: char class is [\"'] not [\"\x27] — grep -E does not honor \x escapes.
+if echo "$COMMAND" | grep -qE "(^|[[:space:]])(bash|sh|zsh|dash)[[:space:]]+-c[[:space:]]+[\"'][^\"']*sed[[:space:]]+([^[:space:]]+[[:space:]]+)*-n([[:space:]]|\$)"; then
+  echo "BLOCKED: 'sed -n' inside bash -c / sh -c is a read. Use the Read tool (offset/limit) instead." >&2
+  exit 2
+fi
+if echo "$COMMAND" | grep -qE "(^|[[:space:]])(bash|sh|zsh|dash)[[:space:]]+-c[[:space:]]+[\"'][^\"']*sed[[:space:]]+([^[:space:]]+[[:space:]]+)*(-e[[:space:]]+|--expression[[:space:]=])?[\"']?(\\\$|[0-9]+)(,(\\\$|[0-9]+))?p[\"']?([[:space:]]|\$)"; then
+  echo "BLOCKED: 'sed … Np/N,Mp/\$p' inside bash -c / sh -c is a read. Use the Read tool (offset/limit) instead." >&2
+  exit 2
+fi
+
 # Command substitution: `$(grep ...)` or backtick-wrapped. Catches absolute-path /
 # backslash-escaped variants of the banned tool name inside the substitution.
 if echo "$COMMAND" | grep -qE "\\\$\\([[:space:]]*(\\\\?[A-Za-z0-9_./-]*/)?(${BANNED})([^A-Za-z0-9_]|$)"; then
@@ -135,9 +147,16 @@ while IFS= read -r SUB; do
       exit 2
       ;;
     sed)
-      # Block sed used for reading (sed -n 'Np', sed -n 'N,Mp')
-      if echo "$SUB" | grep -qE "sed[[:space:]]+(-n[[:space:]]+)?'[0-9]"; then
-        echo "BLOCKED: Use the Read tool instead of Bash sed for reading file ranges. Read supports: offset, limit. Zero permission clicks." >&2
+      # Block sed used for reading. Two signals:
+      #   1. `-n` flag — sed reading mode (default-print suppressed; almost always a Read use).
+      #   2. Bare print-address script: 'Np', "N,Mp", $p, 5p, 1,5p — quoted or unquoted, with/without -e/--expression.
+      # Substitution (sed 's/x/y/' file, sed -i 's/x/y/') is NOT matched and remains legitimate Bash use.
+      if echo "$SUB" | grep -qE 'sed[[:space:]]+([^[:space:]]+[[:space:]]+)*-n([[:space:]]|$)'; then
+        echo "BLOCKED: Use the Read tool instead of Bash 'sed -n' for reading file ranges. Read supports: offset, limit. Zero permission clicks." >&2
+        exit 2
+      fi
+      if echo "$SUB" | grep -qE "sed[[:space:]]+([^[:space:]]+[[:space:]]+)*(-e[[:space:]]+|--expression[[:space:]=])?[\"']?(\\\$|[0-9]+)(,(\\\$|[0-9]+))?p[\"']?([[:space:]]|$)"; then
+        echo "BLOCKED: Use the Read tool instead of Bash sed for reading file ranges (Np / N,Mp / \$p). Read supports: offset, limit. Zero permission clicks." >&2
         exit 2
       fi
       # sed for substitution is a legitimate Bash use — allow it
