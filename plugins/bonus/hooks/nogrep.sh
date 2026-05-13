@@ -129,6 +129,9 @@ while IFS= read -r SUB; do
   [ -z "${SUB// /}" ] && continue
   FIRST_WORD=$(normalize_first "$SUB")
   case "$FIRST_WORD" in
+    ls)
+      # ls is always allowed — explicit whitelist so future regex tweaks can't accidentally block it.
+      ;;
     command)
       echo "BLOCKED: The 'command' builtin is banned (bypass vector for this hook). For 'command -v foo' existence checks, use 'which foo'. For everything else, use the dedicated tool (Grep/Read/Glob)." >&2
       exit 2
