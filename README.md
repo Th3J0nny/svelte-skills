@@ -123,7 +123,7 @@ Skills in this marketplace have auto-invocation triggers defined in their descri
 
 Claude Code allocates 1% of context window (fallback: 8,000 chars) for skill descriptions. Each description is capped at 250 chars. With this marketplace (~31 skills) plus superpowers (~14) and Svelte MCP (~2), you'll have ~47 skill descriptions loaded.
 
-- **Opus 4.6 (1M context)**: budget is ~40,000 chars. 45 skills fit comfortably.
+- **Opus 4.6 (1M context)**: budget is ~40,000 chars. 47 skills fit comfortably.
 - **Sonnet (200k context)**: budget is ~8,000 chars. Descriptions may get truncated, reducing auto-invocation accuracy.
 
 Run `/context` to check for budget warnings. Override with `SLASH_COMMAND_TOOL_CHAR_BUDGET=<chars>`.
