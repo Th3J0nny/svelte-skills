@@ -17,20 +17,32 @@ Claude Code plugin marketplace for Svelte developers. Disciplined, opinionated w
 
 ## Plugins
 
-Five plugins. Four with layered dependencies, one standalone:
+Three plugins, layered:
 
 ```
-agent  <--  frontend  <--  svelte-5  <--  svelte-5-migration
-standalone: bonus (optional)
+frontend  <--  svelte-5  <--  svelte-5-migration
 ```
+
+`frontend` soft-depends on `agent@ronin-skills` (separate marketplace — see [Migration from 0.3.x](#migration-from-03x) below).
 
 | Plugin | Skills/Hooks | What it does |
 | --- | --- | --- |
-| [agent](plugins/agent/) | 12 skills | Research, planning, self-checks, completion verification, git/dev-server/pnpm/socket/nogrep/obey discipline |
 | [frontend](plugins/frontend/) | 13 skills | Validation, pixel-perfect, editing, code style, testing, migration, JS/CSS config |
 | [svelte-5](plugins/svelte-5/) | 6 skills | Svelte code style, component docs, composition patterns, Storybook, Svelte testing |
 | [svelte-5-migration](plugins/svelte-5-migration/) | 1 skill | Svelte 3/4 to 5 migration workflow |
-| [bonus](plugins/bonus/) | 2 hooks | nogrep (force dedicated tools), formatter (auto-format after edits) |
+
+## Migration from 0.3.x
+
+In 0.4.0 the `agent` and `bonus` plugins moved out of this marketplace into [fubits1/ronin-skills](https://github.com/fubits1/ronin-skills). Plugin name stays `agent` so existing `agent:research`, `agent:done`, `agent:before-you-act`, etc. cross-references in `frontend:*` and `svelte-5:*` skills continue to resolve — but only if `agent@ronin-skills` is installed. The `frontend`, `svelte-5`, and `svelte-5-migration` plugins all require `agent@ronin-skills` as of 0.4.0. Migration:
+
+```
+/plugin marketplace add fubits1/ronin-skills
+/plugin install agent@ronin-skills
+/plugin uninstall agent@svelte-skills
+/plugin uninstall bonus@svelte-skills
+/plugin marketplace update svelte-skills
+/plugin update frontend@svelte-skills svelte-5@svelte-skills svelte-5-migration@svelte-skills
+```
 
 ## Installation
 
@@ -48,10 +60,17 @@ For local development/testing:
 
 ### 2. Install prerequisites
 
-**Superpowers plugin** (required by `agent`):
+**Superpowers plugin** (required by `agent@ronin-skills`):
 
 ```
 /plugin install superpowers
+```
+
+**ronin-skills marketplace** (required by `frontend` — provides the `agent` plugin):
+
+```
+/plugin marketplace add fubits1/ronin-skills
+/plugin install agent@ronin-skills
 ```
 
 **Svelte MCP** (required by `svelte-5` and `svelte-5-migration`). Provides `svelte:svelte-code-writer`, `svelte:svelte-core-bestpractices`, and the Svelte autofixer (`mcp__svelte__svelte-autofixer`):
@@ -86,17 +105,12 @@ Then add `@storybook/addon-mcp` to your `.storybook/main.ts` addons. The MCP ser
 ### 3. Install the plugins (in order)
 
 ```
-/plugin install agent
 /plugin install frontend
 /plugin install svelte-5
 /plugin install svelte-5-migration
 ```
 
-Optionally - `bonus` is standalone and optional — install it independently of the others:
-
-```
-/plugin install bonus
-```
+(`agent@ronin-skills` was installed in step 2 above.)
 
 ### 4. Set up your project
 
@@ -108,7 +122,7 @@ The whole marketplace ships as one version. After a new [release](https://github
 
 ```
 /plugin marketplace update svelte-skills
-/plugin update agent              # repeat per installed plugin
+/plugin update frontend           # repeat per installed plugin
 ```
 
 Or rely on Claude Code's auto-update.
@@ -121,9 +135,9 @@ Skills in this marketplace have auto-invocation triggers defined in their descri
 
 > Research as of Opus 4.6 - might need revisiting.
 
-Claude Code allocates 1% of context window (fallback: 8,000 chars) for skill descriptions. Each description is capped at 250 chars. With this marketplace (~31 skills) plus superpowers (~14) and Svelte MCP (~2), you'll have ~47 skill descriptions loaded.
+Claude Code allocates 1% of context window (fallback: 8,000 chars) for skill descriptions. Each description is capped at 250 chars. With this marketplace (~20 skills) plus `agent@ronin-skills` (~15), superpowers (~14), and Svelte MCP (~2), you'll have ~51 skill descriptions loaded.
 
-- **Opus 4.6 (1M context)**: budget is ~40,000 chars. 47 skills fit comfortably.
+- **Opus 4.6 (1M context)**: budget is ~40,000 chars. 51 skills fit comfortably.
 - **Sonnet (200k context)**: budget is ~8,000 chars. Descriptions may get truncated, reducing auto-invocation accuracy.
 
 Run `/context` to check for budget warnings. Override with `SLASH_COMMAND_TOOL_CHAR_BUDGET=<chars>`.
@@ -169,7 +183,7 @@ New - watchlist:
 
 ## Skill development / Ops
 
-- use [agent:update-skills](plugins/agent/skills/update-skills/) to update skills from a local dir to this plugin dir.
+- use `agent:update-skills` (from [fubits1/ronin-skills](https://github.com/fubits1/ronin-skills)) to update skills from a local dir to this plugin dir.
 
 ## Releases
 

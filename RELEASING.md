@@ -51,8 +51,8 @@ Semver, pre-1.0. Same number applies to every plugin.
 Conventional Commits with plugin scope so git-cliff produces grouped, scoped release notes. Commits not matching the convention are bucketed under "Other".
 
 ```
-feat(agent): new self-check skill
-fix(frontend): vitest assertion table
+feat(frontend): new lint:staged task
+fix(svelte-5): storybook-vitest decorator trap
 chore(release): v0.1.0
 docs: clarify install order
 ```
@@ -63,7 +63,7 @@ Fix-forward on `main`:
 
 ```bash
 # commit the fix on main
-git commit -am "fix(agent): X"
+git commit -am "fix(frontend): X"
 git push origin main
 ./scripts/release.sh 0.1.1
 ```
