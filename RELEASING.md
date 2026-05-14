@@ -53,7 +53,7 @@ Conventional Commits with plugin scope so git-cliff produces grouped, scoped rel
 ```
 feat(frontend): new lint:staged task
 fix(svelte-5): storybook-vitest decorator trap
-chore(release): v0.4.0
+chore(release): v0.1.0
 docs: clarify install order
 ```
 

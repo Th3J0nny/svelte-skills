@@ -33,7 +33,7 @@ frontend  <--  svelte-5  <--  svelte-5-migration
 
 ## Migration from 0.3.x
 
-In 0.4.0 the `agent` and `bonus` plugins moved out of this marketplace into [fubits1/ronin-skills](https://github.com/fubits1/ronin-skills). Plugin name stays `agent` so existing `agent:research`, `agent:done`, etc. cross-references in `frontend:*` skills continue to resolve. Migration:
+In 0.4.0 the `agent` and `bonus` plugins moved out of this marketplace into [fubits1/ronin-skills](https://github.com/fubits1/ronin-skills). Plugin name stays `agent` so existing `agent:research`, `agent:done`, `agent:before-you-act`, etc. cross-references in `frontend:*` and `svelte-5:*` skills continue to resolve — but only if `agent@ronin-skills` is installed. The `frontend`, `svelte-5`, and `svelte-5-migration` plugins all require `agent@ronin-skills` as of 0.4.0. Migration:
 
 ```
 /plugin marketplace add fubits1/ronin-skills
