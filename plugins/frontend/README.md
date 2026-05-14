@@ -2,13 +2,19 @@
 
 Frontend development discipline -- validation, pixel-perfect measurement, editing, code style, testing, migration baselines.
 
-Part of the [svelte-skills](https://github.com/fubits1/svelte-skills) plugin marketplace. This is a framework-agnostic plugin that sits between `agent` (required dependency) and the framework-specific plugins (e.g. `svelte-5`).
+Part of the [svelte-skills](https://github.com/fubits1/svelte-skills) plugin marketplace. This is a framework-agnostic plugin that sits between `agent@ronin-skills` (cross-marketplace required dependency) and the framework-specific plugins (e.g. `svelte-5`).
 
 For installation and setup, see the [root README](https://github.com/fubits1/svelte-skills#readme).
 
 ## Dependencies
 
-- **`agent` plugin** -- skills in this plugin reference `agent:research`, `agent:done`, and others. Install it first.
+- **`agent` plugin from [fubits1/ronin-skills](https://github.com/fubits1/ronin-skills)** -- skills in this plugin reference `agent:research`, `agent:done`, and others. Add the marketplace and install the plugin before installing `frontend`:
+
+  ```
+  /plugin marketplace add fubits1/ronin-skills
+  /plugin install agent@ronin-skills
+  ```
+
 - **Playwright MCP** -- required for browser verification and screenshot workflows.
 
 ## Skills

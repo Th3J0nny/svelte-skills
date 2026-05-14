@@ -8,24 +8,6 @@
   },
   "plugins": [
     {
-      "name": "agent",
-      "source": "./plugins/agent",
-      "description": "AI coding agent discipline — research, planning, self-checks, and completion verification. Requires superpowers plugin.",
-      "version": "0.3.1",
-      "author": {
-        "name": "fubits1"
-      },
-      "category": "workflow",
-      "keywords": [
-        "agent",
-        "discipline",
-        "research",
-        "planning",
-        "verification"
-      ],
-      "license": "MIT"
-    },
-    {
       "name": "frontend",
       "source": "./plugins/frontend",
       "description": "Frontend development discipline — validation, pixel-perfect measurement, editing, code style, testing, migration baselines.",
@@ -53,12 +35,7 @@
         "name": "fubits1"
       },
       "category": "svelte",
-      "keywords": [
-        "svelte",
-        "storybook",
-        "testing",
-        "components"
-      ],
+      "keywords": ["svelte", "storybook", "testing", "components"],
       "license": "MIT"
     },
     {
@@ -70,31 +47,7 @@
         "name": "fubits1"
       },
       "category": "svelte",
-      "keywords": [
-        "svelte",
-        "migration",
-        "svelte-5",
-        "runes",
-        "upgrade"
-      ],
-      "license": "MIT"
-    },
-    {
-      "name": "bonus",
-      "source": "./plugins/bonus",
-      "description": "Optional hooks and skills — nogrep, formatter, discipline rules. Standalone, no dependencies.",
-      "version": "0.3.1",
-      "author": {
-        "name": "fubits1"
-      },
-      "category": "workflow",
-      "keywords": [
-        "hooks",
-        "nogrep",
-        "formatter",
-        "prettier",
-        "markdownlint"
-      ],
+      "keywords": ["svelte", "migration", "svelte-5", "runes", "upgrade"],
       "license": "MIT"
     }
   ],
