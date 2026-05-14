@@ -27,7 +27,7 @@ standalone: bonus (optional)
 | Plugin | Skills/Hooks | What it does |
 | --- | --- | --- |
 | [agent](plugins/agent/) | 12 skills | Research, planning, self-checks, completion verification, git/dev-server/pnpm/socket/nogrep/obey discipline |
-| [frontend](plugins/frontend/) | 11 skills | Validation, pixel-perfect, editing, code style, testing, migration |
+| [frontend](plugins/frontend/) | 13 skills | Validation, pixel-perfect, editing, code style, testing, migration, JS/CSS config |
 | [svelte-5](plugins/svelte-5/) | 6 skills | Svelte code style, component docs, composition patterns, Storybook, Svelte testing |
 | [svelte-5-migration](plugins/svelte-5-migration/) | 1 skill | Svelte 3/4 to 5 migration workflow |
 | [bonus](plugins/bonus/) | 2 hooks | nogrep (force dedicated tools), formatter (auto-format after edits) |
@@ -121,7 +121,7 @@ Skills in this marketplace have auto-invocation triggers defined in their descri
 
 > Research as of Opus 4.6 - might need revisiting.
 
-Claude Code allocates 1% of context window (fallback: 8,000 chars) for skill descriptions. Each description is capped at 250 chars. With this marketplace (~29 skills) plus superpowers (~14) and Svelte MCP (~2), you'll have ~45 skill descriptions loaded.
+Claude Code allocates 1% of context window (fallback: 8,000 chars) for skill descriptions. Each description is capped at 250 chars. With this marketplace (~31 skills) plus superpowers (~14) and Svelte MCP (~2), you'll have ~47 skill descriptions loaded.
 
 - **Opus 4.6 (1M context)**: budget is ~40,000 chars. 45 skills fit comfortably.
 - **Sonnet (200k context)**: budget is ~8,000 chars. Descriptions may get truncated, reducing auto-invocation accuracy.

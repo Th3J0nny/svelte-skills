@@ -21,6 +21,8 @@ For installation and setup, see the [root README](https://github.com/fubits1/sve
 | `code-style` | Variable naming, brace style, HTML data attributes |
 | `code-style-css` | CSS-specific style rules (layout vs decorative) |
 | `css-nesting` | CSS nesting with `&` and stylelint compliance |
+| `css-subgrid` | Subgrid pattern for card grids (icon/title/CTA alignment) |
+| `js-config` | ESLint/Prettier/Stylelint/Svelte+Vite+Astro config decisions |
 | `validate` | Validation discipline (testing, baselines, browser checks) |
 | `playwright` | Playwright MCP usage (screenshots, measurements) |
 | `vitest` | Vitest config (projects, browser mode, flake hygiene) |
