@@ -13,7 +13,7 @@ body = """
 {% endfor %}{% endfor %}
 **Full Changelog**: https://github.com/{{ remote.github.owner }}/{{ remote.github.repo }}/compare/{{ previous.version }}...{{ version }}
 """
-trim = true
+trim = false
 
 [git]
 conventional_commits = true
