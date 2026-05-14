@@ -14,10 +14,16 @@ That's it. The script:
 
 1. Checks preconditions (on `main`, clean tree, in sync with origin, tag doesn't exist, version matches `X.Y.Z`).
 2. Bumps `marketplace.json` top-level `version` and every `plugins[].version` to the given value.
-3. Runs `claude plugin validate` against each `plugins/*/` locally. (Marketplace-level validation is skipped — the validator in Claude Code 2.1.119 rejects `$schema` and `description` at the marketplace root even though both are accepted by the loader.)
+3. Runs `claude plugin validate .` on the marketplace and on each `plugins/*/` locally.
 4. Commits `chore(release): v$VERSION`.
 5. Tags `v$VERSION`.
 6. Pushes with `git push --follow-tags origin main`.
+
+Pass `--dry-run` to bump, validate, then revert without committing/tagging/pushing:
+
+```bash
+./scripts/release.sh --dry-run 0.1.0
+```
 
 `release.yml` then publishes the GitHub Release with auto-generated notes.
 
@@ -59,7 +65,8 @@ If `release.sh` can't run (e.g. Windows without bash):
 
 ```bash
 # 1. edit .claude-plugin/marketplace.json — bump top-level + all 5 plugins[].version
-# 2. validate each plugin (stop on first failure)
+# 2. validate marketplace + each plugin (stop on first failure)
+claude plugin validate . || exit 1
 for d in plugins/*/; do claude plugin validate "$d" || exit 1; done
 # 3. commit + tag + push
 git commit -am "chore(release): v0.1.0"
