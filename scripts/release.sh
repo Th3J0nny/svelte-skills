@@ -59,8 +59,17 @@ for d in plugins/*/; do
 done
 
 if [[ "$DRY_RUN" == "1" ]]; then
-  echo "release.sh: --dry-run, reverting bump and exiting"
+  echo "release.sh: --dry-run, reverting bump"
   git checkout -- .claude-plugin/marketplace.json
+  echo
+  if command -v git-cliff >/dev/null; then
+    echo "release.sh: release notes preview for $TAG"
+    echo "---"
+    git-cliff --unreleased --tag "$TAG" --strip header 2>/dev/null
+    echo "---"
+  else
+    echo "release.sh: install git-cliff to preview release notes"
+  fi
   echo "release.sh: would have tagged $TAG and pushed"
   exit 0
 fi
