@@ -26,13 +26,15 @@ export function makePathFilter(files: string[], opts: FilterOpts = {}): RegExp {
   return new RegExp(`${anchored ? "^" : ""}(${alt})${PATH_BOUNDARY}`);
 }
 
-// Strip ANSI before regex test, but keep the original line in the output so users see
-// the tool's colored output unchanged. Tools like tsgo prefix every error line with
-// `\x1b[96m` when `FORCE_COLOR=1`, which breaks anchored regexes (`^<path>`) because the
-// line starts with the escape byte, not the path.
+// Strip ANSI and normalise path separators before regex test, but keep the original line
+// in the output so users see the tool's colored output unchanged. Tools like tsgo prefix
+// every error line with `\x1b[96m` when `FORCE_COLOR=1`, which breaks anchored regexes
+// (`^<path>`) because the line starts with the escape byte, not the path. On Windows
+// some tools emit paths with backslashes while `makePathFilter` normalises to forward
+// slashes — normalise the line too so the regex matches either form.
 export function filterLines(text: string, re: RegExp): string {
   return text
     .split(LINE_SPLIT)
-    .filter((line) => re.test(line.replace(ANSI_RE, "")))
+    .filter((line) => re.test(normalize(line.replace(ANSI_RE, ""))))
     .join("\n");
 }
