@@ -16,7 +16,10 @@ import { lintFile } from "../validate/lint-file.ts";
 const SOURCE_EXTS = /\.(ts|js|svelte)$/i;
 
 function git(args: string[]): string {
-  return execFileSync("git", args, { encoding: "utf8" }).trim();
+  return execFileSync("git", args, {
+    encoding: "utf8",
+    stdio: ["ignore", "pipe", "pipe"],
+  }).trim();
 }
 
 function gitOrEmpty(args: string[]): string {
@@ -36,7 +39,14 @@ function splitFiles(out: string): string[] {
 
 const includeCommitted = process.argv.slice(2).includes("--committed");
 
-const repoRoot = git(["rev-parse", "--show-toplevel"]);
+const repoRoot = gitOrEmpty(["rev-parse", "--show-toplevel"]);
+if (!repoRoot) {
+  $.logError(
+    "lint:staged",
+    "not a git repository (run `git init` first, or run from inside a checked-out repo)",
+  );
+  process.exit(1);
+}
 const staged = splitFiles(
   git(["diff", "--cached", "--name-only", "--diff-filter=ACMR"]),
 );

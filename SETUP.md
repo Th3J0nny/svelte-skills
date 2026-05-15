@@ -78,7 +78,7 @@ The scripts depend on `dax` and `tinyglobby`:
 pnpm add -D dax tinyglobby
 ```
 
-For a experimental oxlint + eslint setup (rules split, overlap elimination), see [this config gist](https://gist.github.com/fubits1/63385040dff3faca5306479d021e74f1). HINT: it needs updating. Oxlint launched [alpha support for eslint plugins](https://oxc.rs/blog/2026-03-11-oxlint-js-plugins-alpha), added [type-aware linting](https://oxc.rs/docs/guide/usage/linter/type-aware), and e18e released a dedicated [eslint plugin](https://npmx.dev/package/@e18e/eslint-plugin#user-content-usage-with-oxlint) usable with Oxlint via JS plugins.
+For an experimental oxlint + eslint setup (rules split, overlap elimination), see [this config gist](https://gist.github.com/fubits1/63385040dff3faca5306479d021e74f1). HINT: it needs updating. Oxlint launched [alpha support for eslint plugins](https://oxc.rs/blog/2026-03-11-oxlint-js-plugins-alpha), added [type-aware linting](https://oxc.rs/docs/guide/usage/linter/type-aware), and e18e released a dedicated [eslint plugin](https://npmx.dev/package/@e18e/eslint-plugin#user-content-usage-with-oxlint) usable with Oxlint via JS plugins.
 
 ## 4. Adapt configurable values
 

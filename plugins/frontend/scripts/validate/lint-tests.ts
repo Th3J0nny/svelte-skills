@@ -1,5 +1,6 @@
 import { delimiter, resolve } from "node:path";
 import { $ } from "dax";
+import { logSkip } from "../lib/dax-helpers.ts";
 import { filterLines } from "../lib/filter-output.ts";
 import { runChunked, runParallel } from "../lib/grouped.ts";
 import { collectTestFiles } from "../lib/paths.ts";
@@ -28,18 +29,32 @@ const TEST_FILE_RE = /\.test\.ts/;
 export async function lintTests(): Promise<boolean> {
   const files = await collectTestFiles();
   if (files.length === 0) {
-    $.logError(`no test files found matching: ${TEST_GLOBS.join(", ")}`);
-    return false;
+    const reason = `no test files matched TEST_GLOBS=${TEST_GLOBS.join(",")}`;
+    logSkip("oxlint", reason);
+    logSkip("eslint", reason);
+    logSkip("knip", reason);
+    logSkip("svelte-check", reason);
+    return true;
   }
 
-  // oxlint does not expand globs from CLI args — must enumerate files. Chunked to fit
-  // Windows cmd.exe limits. Runs as its own phase before runParallel because it spawns
-  // N concurrent invocations that don't fit the "one task = one CommandBuilder" shape
-  // of runParallel.
+  // oxlint and eslint both take a file list on the command line. On large test suites
+  // that list can exceed Windows cmd.exe's 8191-char limit, so chunk both via runChunked
+  // (same approach for both). Runs as its own phase before runParallel because it spawns
+  // N concurrent invocations per tool that don't fit the "one task = one CommandBuilder"
+  // shape of runParallel.
+  //
+  // We pass the resolved file list (not raw globs) so ESLint never sees a glob that
+  // matches zero files. ESLint exits 1 on unmatched globs even when other globs do match
+  // — a footgun when `TEST_GLOBS` includes both `src/**/*.test.ts` and
+  // `tests/**/*.test.ts` and the project only has one of those dirs. `--no-warn-ignored`
+  // silences ESLint's "File ignored because of a matching ignore pattern" warning for
+  // files covered by `.gitignore` or excluded in `eslint.config.js`.
   const oxlintResult = await runChunked("oxlint", "oxlint", files);
+  const eslintResult = await runChunked("eslint", "eslint", files, [
+    "--no-warn-ignored",
+  ]);
 
   const { ok: parallelOk } = await runParallel([
-    { name: "eslint", cmd: $`eslint ${TEST_GLOBS}` },
     {
       name: "knip",
       cmd: $`knip --config ${KNIP_TESTS_CONFIG} --include files,exports`,
@@ -52,5 +67,5 @@ export async function lintTests(): Promise<boolean> {
     },
   ]);
 
-  return oxlintResult.ok && parallelOk;
+  return oxlintResult.ok && eslintResult.ok && parallelOk;
 }
