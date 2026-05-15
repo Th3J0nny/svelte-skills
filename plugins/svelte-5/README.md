@@ -22,14 +22,13 @@ For installation and setup, see the [root README](https://github.com/fubits1/sve
 
 ## Template scripts
 
-Two flavours ship under `scripts/` -- pick one. Same `package.json` task name.
+TypeScript + dax script under `scripts/`. Runs vitest for a specific story file by pattern. Reads `VITEST_STORYBOOK_PROJECT` env var (default `storybook`) for the project name.
 
-| Variant | File | `package.json` task |
-| --- | --- | --- |
-| Bash | `test-story.sh` | `"test:story": "bash scripts/test-story.sh"` |
-| TypeScript + dax | `bin/test-story.ts` (calls `validate/test-story.ts`) | `"test:story": "node --experimental-strip-types scripts/bin/test-story.ts"` |
+> **Migration note (0.5.0):** the bash variant (`test-story.sh`) was removed. Swap `"test:story": "bash scripts/test-story.sh"` for the TS line below and copy `bin/test-story.ts` + `validate/test-story.ts` into your project's `scripts/`.
 
-Both run vitest for a specific story file by pattern. The TS variant reads `VITEST_STORYBOOK_PROJECT` env var (default `storybook`) for the project name.
+| File | `package.json` task |
+| --- | --- |
+| `bin/test-story.ts` (calls `validate/test-story.ts`) | `"test:story": "node --experimental-strip-types scripts/bin/test-story.ts"` |
 
 See [SETUP.md](../../SETUP.md) for full setup.
 

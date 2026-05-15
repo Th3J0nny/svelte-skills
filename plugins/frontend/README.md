@@ -37,25 +37,14 @@ For installation and setup, see the [root README](https://github.com/fubits1/sve
 
 ## Template Scripts
 
-Two flavours ship under `scripts/` -- pick one. Both expose the same `package.json` script names. See [SETUP.md](../../SETUP.md) for full wiring and dependencies.
+TypeScript + dax scripts under `scripts/{lib,validate,bin}/`. Parallel execution via dax `$.all`, Windows-safe path chunking, anchored output filtering, and a `lint:staged` workflow. Requires `dax` and `tinyglobby` as dev deps, Node 22.6+ for `--experimental-strip-types` (or use `tsx`). See [SETUP.md](../../SETUP.md) for full wiring and dependencies.
 
-### Bash (default, zero extra deps)
-
-| Script | `package.json` task | Purpose |
-| --- | --- | --- |
-| `lint-file.sh` | `pnpm lint:file` | Per-file lint chain (eslint + oxlint + tsgo + svelte-check + knip) |
-| `lint-tests.sh` | `pnpm lint:tests` | Lint test files (oxlint + eslint + knip + svelte-check) |
-| `lint-summary.ts` | `pnpm lint:summary` | Dashboard view of all lint results as a table |
-| `test-file.sh` | `pnpm test:file` | Run vitest for specific files (node + browser projects) |
-
-### TypeScript + dax (recommended)
-
-Adds parallel execution via dax `$.all`, Windows-safe path chunking, anchored output filtering, and an extra `lint:staged` workflow. Subtree under `scripts/{lib,validate,bin}/`. Requires `dax` and `tinyglobby` as dev deps and Node 22.6+ for `--experimental-strip-types` (or use `tsx`).
+> **Migration note (0.5.0):** the bash variants (`lint-file.sh`, `lint-tests.sh`, `test-file.sh`) were removed. Swap your `package.json` to the TS lines below and copy the `lib/`, `validate/`, and `bin/` subtrees into your project's `scripts/`.
 
 | Script | `package.json` task | Purpose |
 | --- | --- | --- |
-| `bin/lint-file.ts` | `pnpm lint:file` | Same as bash variant, parallelised |
-| `bin/lint-tests.ts` | `pnpm lint:tests` | Same as bash variant, parallelised |
+| `bin/lint-file.ts` | `pnpm lint:file` | Per-file lint chain (eslint + oxlint + tsgo + svelte-check + knip), parallelised |
+| `bin/lint-tests.ts` | `pnpm lint:tests` | Lint test files (oxlint + eslint + knip + svelte-check), parallelised |
 | `bin/lint-staged.ts` | `pnpm lint:staged` | Lint only files staged in git. Pass `--committed` to also include commits ahead of upstream |
-| `bin/test-file.ts` | `pnpm test:file` | Run vitest for specific files |
+| `bin/test-file.ts` | `pnpm test:file` | Run vitest for specific files (node + browser projects) |
 | `lint-summary.ts` | `pnpm lint:summary` | Dashboard view of all lint results as a table |

@@ -2,33 +2,13 @@
 
 After installing the plugins (see [README.md](README.md#installation)), set up your project's tooling.
 
-Two flavours of validation scripts ship with this marketplace:
+Validation scripts ship as a TypeScript + dax toolkit: parallel execution via `dax.$all`, Windows-safe path chunking, anchored output filtering, and a `lint:staged` workflow that lints only files staged (or staged + ahead of upstream) in git.
 
-- **Bash** (default) -- simple, zero extra deps, good for projects already using a typical shell + pnpm setup.
-- **TypeScript + dax** (recommended for advanced workflows) -- parallel execution, Windows-safe path chunking, anchored output filtering, and the bonus `lint:staged` workflow that lints only the files staged (or staged + ahead of upstream) in git.
-
-Pick one path and stick to it -- they share the same `package.json` script names.
+> **Migration note (0.5.0):** the bash variants (`lint-file.sh`, `lint-tests.sh`, `test-file.sh`, `test-story.sh`) were removed. Replace any `"bash scripts/X.sh"` entries in your `package.json` with the TS equivalents shown below and copy over the `lib/`, `validate/`, and `bin/` subtrees.
 
 ## 1. Copy template scripts
 
-Copy from the plugin directories into your project's `scripts/` folder:
-
-### Bash variant
-
-From `frontend/scripts/`:
-
-- `lint-file.sh` -- per-file lint chain
-- `lint-tests.sh` -- lint test files
-- `lint-summary.ts` -- lint dashboard (always TS, no bash equivalent)
-- `test-file.sh` -- run vitest for specific files
-
-From `svelte-5/scripts/`:
-
-- `test-story.sh` -- run vitest for specific stories
-
-### TypeScript + dax variant
-
-Copy these three subtrees into `scripts/`:
+Copy these subtrees into your project's `scripts/` folder:
 
 From `frontend/scripts/`:
 
@@ -43,22 +23,6 @@ From `svelte-5/scripts/`:
 - `bin/test-story.ts`
 
 ## 2. Wire `package.json` scripts
-
-### Bash variant
-
-```json
-{
-  "scripts": {
-    "lint:file": "bash scripts/lint-file.sh",
-    "lint:tests": "bash scripts/lint-tests.sh",
-    "lint:summary": "node --experimental-strip-types scripts/lint-summary.ts",
-    "test:file": "bash scripts/test-file.sh",
-    "test:story": "bash scripts/test-story.sh"
-  }
-}
-```
-
-### TypeScript variant
 
 ```json
 {
@@ -108,9 +72,7 @@ For markdown linting:
 pnpm add -D markdownlint-cli
 ```
 
-### TypeScript variant only
-
-The TS scripts depend on `dax` and `tinyglobby`:
+The scripts depend on `dax` and `tinyglobby`:
 
 ```bash
 pnpm add -D dax tinyglobby
@@ -119,19 +81,6 @@ pnpm add -D dax tinyglobby
 For a experimental oxlint + eslint setup (rules split, overlap elimination), see [this config gist](https://gist.github.com/fubits1/63385040dff3faca5306479d021e74f1). HINT: it needs updating. Oxlint launched [alpha support for eslint plugins](https://oxc.rs/blog/2026-03-11-oxlint-js-plugins-alpha), added [type-aware linting](https://oxc.rs/docs/guide/usage/linter/type-aware), and e18e released a dedicated [eslint plugin](https://npmx.dev/package/@e18e/eslint-plugin#user-content-usage-with-oxlint) usable with Oxlint via JS plugins.
 
 ## 4. Adapt configurable values
-
-### Bash variant
-
-The template scripts have sensible defaults but may need adjusting:
-
-- **`lint-file.sh`**: tsconfig path (`./tsconfig.json` by default)
-- **`lint-tests.sh`**: test tsconfig path, knip config file name (`knip.tests.jsonc`)
-- **`test-file.sh`**: vitest project names (`node`, `browser` by default)
-- **`test-story.sh`**: vitest project name (`storybook` by default)
-
-Comments in each script explain what to change.
-
-### TypeScript variant
 
 The TS scripts read environment variables so you do not edit the source. Set what you need (e.g. in `.env`, your shell, or via `cross-env`):
 
