@@ -1,4 +1,4 @@
-import { delimiter, resolve } from "node:path";
+import { delimiter, relative, resolve } from "node:path";
 import { $ } from "dax";
 import { logSkip } from "../lib/dax-helpers.ts";
 import { filterLines, makePathFilter } from "../lib/filter-output.ts";
@@ -37,8 +37,23 @@ export async function lintFile(args: string[]): Promise<boolean> {
     return true;
   }
 
-  const filterAnchored = makePathFilter(files);
-  const filterAny = makePathFilter(files, { anchored: false });
+  // `expandGlobs` returns absolute paths for glob/dir args but preserves raw args verbatim
+  // (relative or absolute) for explicit file args. Tools differ on which form they emit:
+  // svelte-check, knip and tsgo print paths relative to cwd; absolute paths from
+  // expandGlobs would never match those lines. Build the filter from BOTH forms (deduped)
+  // so the regex matches whichever the tool emits.
+  const cwd = process.cwd();
+  const filesForFilter = [
+    ...new Set(
+      files.flatMap((f) => {
+        const abs = resolve(cwd, f);
+        const rel = relative(cwd, abs).replaceAll("\\", "/");
+        return [abs, rel];
+      }),
+    ),
+  ];
+  const filterAnchored = makePathFilter(filesForFilter);
+  const filterAny = makePathFilter(filesForFilter, { anchored: false });
   let ok = true;
 
   // oxlint does not expand globs and does not walk arbitrary args the same way eslint does,

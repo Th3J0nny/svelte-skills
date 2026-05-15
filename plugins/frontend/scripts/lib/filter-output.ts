@@ -1,6 +1,8 @@
 const REGEX_META = /[\\.[\]*^$()+?{}|]/g;
 const NEVER_MATCH = /(?!)/;
 const LINE_SPLIT = /\r?\n/;
+// oxlint-disable-next-line no-control-regex -- intentional: stripping ANSI escape codes
+const ANSI_RE = /\x1b\[[0-9;]*m/g;
 
 export function escapeRegex(input: string): string {
   return input.replace(REGEX_META, "\\$&");
@@ -19,9 +21,13 @@ export function makePathFilter(files: string[], opts: FilterOpts = {}): RegExp {
   return new RegExp(`${anchored ? "^" : ""}(${alt})`);
 }
 
+// Strip ANSI before regex test, but keep the original line in the output so users see
+// the tool's colored output unchanged. Tools like tsgo prefix every error line with
+// `\x1b[96m` when `FORCE_COLOR=1`, which breaks anchored regexes (`^<path>`) because the
+// line starts with the escape byte, not the path.
 export function filterLines(text: string, re: RegExp): string {
   return text
     .split(LINE_SPLIT)
-    .filter((line) => re.test(line))
+    .filter((line) => re.test(line.replace(ANSI_RE, "")))
     .join("\n");
 }
