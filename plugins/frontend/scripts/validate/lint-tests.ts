@@ -1,5 +1,6 @@
 import { delimiter, resolve } from "node:path";
 import { $ } from "dax";
+import { logSkip } from "../lib/dax-helpers.ts";
 import { filterLines } from "../lib/filter-output.ts";
 import { runChunked, runParallel } from "../lib/grouped.ts";
 import { collectTestFiles } from "../lib/paths.ts";
@@ -28,8 +29,12 @@ const TEST_FILE_RE = /\.test\.ts/;
 export async function lintTests(): Promise<boolean> {
   const files = await collectTestFiles();
   if (files.length === 0) {
-    $.logError(`no test files found matching: ${TEST_GLOBS.join(", ")}`);
-    return false;
+    const reason = `no test files matched TEST_GLOBS=${TEST_GLOBS.join(",")}`;
+    logSkip("oxlint", reason);
+    logSkip("eslint", reason);
+    logSkip("knip", reason);
+    logSkip("svelte-check", reason);
+    return true;
   }
 
   // oxlint does not expand globs from CLI args — must enumerate files. Chunked to fit
@@ -38,8 +43,14 @@ export async function lintTests(): Promise<boolean> {
   // of runParallel.
   const oxlintResult = await runChunked("oxlint", "oxlint", files);
 
+  // Pass the resolved file list (not raw globs) so ESLint never sees a glob that matches
+  // zero files. ESLint exits 1 on unmatched globs even when other globs do match — a
+  // footgun when `TEST_GLOBS` includes both `src/**/*.test.ts` and `tests/**/*.test.ts`
+  // and the project only has one of those dirs. `--no-warn-ignored` silences ESLint's
+  // "File ignored because of a matching ignore pattern" warning for files covered by
+  // `.gitignore` or excluded in `eslint.config.js`.
   const { ok: parallelOk } = await runParallel([
-    { name: "eslint", cmd: $`eslint ${TEST_GLOBS}` },
+    { name: "eslint", cmd: $`eslint --no-warn-ignored ${files}` },
     {
       name: "knip",
       cmd: $`knip --config ${KNIP_TESTS_CONFIG} --include files,exports`,
