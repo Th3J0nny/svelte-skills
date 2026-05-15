@@ -214,7 +214,7 @@ Docs example: **`vitest --project=storybook`** ([CLI](https://storybook.js.org/d
   "scripts": {
     "test": "vitest run --project node --project browser",
     "test-storybook": "vitest run --project storybook",
-    "test:story": "bash scripts/test-story.sh"
+    "test:story": "node --experimental-strip-types scripts/bin/test-story.ts"
   }
 }
 ```
