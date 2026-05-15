@@ -79,12 +79,15 @@ export async function lintFile(args: string[]): Promise<boolean> {
   // the file is out of scope. Filtering up front keeps the eslint output clean.
   // `--no-warn-ignored` silences ESLint's "File ignored because of a matching ignore pattern"
   // warning for files covered by `.gitignore` or excluded in `eslint.config.js`.
+  // Chunked like oxlint to fit Windows cmd.exe 8191-char limit on large file lists. Runs
+  // as its own phase before runParallel because runChunked spawns N concurrent invocations
+  // that don't fit the "one task = one CommandBuilder" shape of runParallel.
   const eslintFiles = files.filter((f) => ESLINT_EXTS.test(f));
   if (eslintFiles.length > 0) {
-    tasks.push({
-      name: "eslint",
-      cmd: $`eslint --no-warn-ignored ${eslintFiles}`,
-    });
+    const r = await runChunked("eslint", "eslint", eslintFiles, [
+      "--no-warn-ignored",
+    ]);
+    if (!r.ok) ok = false;
   } else {
     logSkip("eslint", "no candidates in scope");
   }

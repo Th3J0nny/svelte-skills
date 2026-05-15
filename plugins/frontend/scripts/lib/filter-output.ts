@@ -14,11 +14,16 @@ function normalize(path: string): string {
 
 type FilterOpts = { anchored?: boolean };
 
+// Lookahead requires the char after the matched path to NOT be a path-name char, so
+// `Bad.ts` does not falsely match `Bad.tsgo.ts`. Allowed delimiters: anything outside
+// `[A-Za-z0-9_./-]` (typical tool output: `(`, `:`, `"`, space, etc.) or end-of-line.
+const PATH_BOUNDARY = "(?=[^A-Za-z0-9_./\\-]|$)";
+
 export function makePathFilter(files: string[], opts: FilterOpts = {}): RegExp {
   const anchored = opts.anchored !== false;
   if (files.length === 0) return NEVER_MATCH;
   const alt = files.map((f) => escapeRegex(normalize(f))).join("|");
-  return new RegExp(`${anchored ? "^" : ""}(${alt})`);
+  return new RegExp(`${anchored ? "^" : ""}(${alt})${PATH_BOUNDARY}`);
 }
 
 // Strip ANSI before regex test, but keep the original line in the output so users see
