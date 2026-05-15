@@ -23,7 +23,7 @@ Three plugins, layered:
 frontend  <--  svelte-5  <--  svelte-5-migration
 ```
 
-`frontend` soft-depends on `agent@ronin-skills` (separate marketplace — see [Migration from 0.3.x](#migration-from-03x) below).
+`frontend` soft-depends on [`agent@ronin-skills`](https://github.com/fubits1/ronin-skills) (separate repo / marketplace — see [Migration from 0.3.x](#migration-from-03x) below).
 
 | Plugin | Skills/Hooks | What it does |
 | --- | --- | --- |
