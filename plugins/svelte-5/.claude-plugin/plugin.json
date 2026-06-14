@@ -1,4 +1,8 @@
 {
   "name": "svelte-5",
-  "description": "Svelte development workflows — component docs, code style, Storybook, testing with vitest-browser-svelte."
+  "description": "Svelte development workflows — component docs, code style, Storybook, testing with vitest-browser-svelte.",
+  "version": "0.5.1",
+  "author": {
+    "name": "fubits1"
+  }
 }
