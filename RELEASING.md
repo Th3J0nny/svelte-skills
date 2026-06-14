@@ -1,6 +1,6 @@
 # Releasing
 
-The whole marketplace ships as **one version**. All 5 plugins bump together. One tag per release. One GitHub Release per release.
+The whole marketplace ships as **one version**. All plugins bump together. One tag per release. One GitHub Release per release.
 
 ## Quick start
 
@@ -13,7 +13,7 @@ From a clean `main` that's up to date with `origin`:
 That's it. The script:
 
 1. Checks preconditions (on `main`, clean tree, in sync with origin, tag doesn't exist, version matches `X.Y.Z`).
-2. Bumps `marketplace.json` top-level `version` and every `plugins[].version` to the given value.
+2. Bumps `marketplace.json` top-level `version` and every `plugins[].version`, plus each `plugins/*/.claude-plugin/plugin.json` `version`, to the given value.
 3. Runs `claude plugin validate .` on the marketplace and on each `plugins/*/` locally.
 4. Commits `chore(release): v$VERSION`.
 5. Tags `v$VERSION`.
@@ -75,7 +75,8 @@ No release branches.
 If `release.sh` can't run (e.g. Windows without bash):
 
 ```bash
-# 1. edit .claude-plugin/marketplace.json — bump top-level + all 5 plugins[].version
+# 1. edit .claude-plugin/marketplace.json — bump top-level + all plugins[].version
+#    and bump version in each plugins/*/.claude-plugin/plugin.json
 # 2. validate marketplace + each plugin (stop on first failure)
 claude plugin validate . || exit 1
 for d in plugins/*/; do claude plugin validate "$d" || exit 1; done
