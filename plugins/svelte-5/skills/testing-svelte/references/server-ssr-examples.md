@@ -83,8 +83,8 @@ describe('Page SSR', () => {
 		).not.toThrow();
 	});
 
-	test('renders correct HTML structure', () => {
-		const { body } = render(PageComponent, {
+	test('renders correct HTML structure', async () => {
+		const { body } = await render(PageComponent, {
 			props: {
 				data: {
 					title: 'Welcome',
@@ -99,8 +99,8 @@ describe('Page SSR', () => {
 		expect(body).toContain('<li>Gamma</li>');
 	});
 
-	test('applies correct CSS classes', () => {
-		const { body } = render(PageComponent, {
+	test('applies correct CSS classes', async () => {
+		const { body } = await render(PageComponent, {
 			props: { data: { status: 'success' } },
 		});
 
@@ -109,8 +109,8 @@ describe('Page SSR', () => {
 		expect(body).toContain('<svg'); // Icon present
 	});
 
-	test('handles empty data gracefully', () => {
-		const { body } = render(PageComponent, {
+	test('handles empty data gracefully', async () => {
+		const { body } = await render(PageComponent, {
 			props: { data: { items: [] } },
 		});
 
