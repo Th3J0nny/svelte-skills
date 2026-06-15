@@ -61,7 +61,7 @@ When a pattern appears in 2+ components, extract to `$utils/<category>.ts`. Don'
 
 ## Tooling
 
-Multi-file Svelte refactors to `svelte:svelte-file-editor` subagent (per `agent:before-you-act` "Consider before doing it yourself"). Validates each file via `mcp__svelte__svelte-autofixer`.
+Delegate creating, editing, or reviewing any `.svelte` / `.svelte.ts` / `.svelte.js` file to the `svelte:svelte-file-editor` subagent (per `agent:before-you-act` "Consider before doing it yourself"), multi-file refactors most of all. The subagent runs in its own context window, so its docs lookup (`mcp__svelte__get-documentation`) and autofixer iteration (`mcp__svelte__svelte-autofixer`) don't spend the main agent's context.
 
 ## Symmetric bugs
 

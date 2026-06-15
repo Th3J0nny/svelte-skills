@@ -14,7 +14,7 @@ Read files, check against rules below. Output concise but comprehensive, sacrifi
 
 - Icon-only buttons need `aria-label`
 - Form controls need `<label>` or `aria-label`
-- Interactive elements need keyboard handlers (`onkeydown`/`onkeyup`)
+- Native `<button>`/`<a>` handle Enter/Space automatically; only non-semantic interactive elements (`div`/`span` with `role`) need explicit key handlers (`onkeydown`/`onkeyup`)
 - `<button>` for actions, `<a>` for navigation (not `<div onclick>`)
 - Images need `alt` (or `alt=""` if decorative)
 - Decorative icons need `aria-hidden="true"`
@@ -61,7 +61,7 @@ Read files, check against rules below. Output concise but comprehensive, sacrifi
 - Non-breaking spaces: `10&nbsp;MB`, `⌘&nbsp;K`, brand names
 - Loading states end with `…`: `"Loading…"`, `"Saving…"`
 - `font-variant-numeric: tabular-nums` for number columns/comparisons
-- Use `text-wrap: balance` or `text-pretty` on headings (prevents widows)
+- Use `text-wrap: balance` on headings; `text-wrap: pretty` on body paragraphs (prevents orphans/widows)
 
 ### Content Handling
 
@@ -78,8 +78,9 @@ Read files, check against rules below. Output concise but comprehensive, sacrifi
 
 ### Performance
 
-- Large lists (>50 items): virtualize (`svelte-virtual-list`, `content-visibility: auto`)
-- No layout reads in reactive statements (`getBoundingClientRect`, `offsetHeight`, `offsetWidth`, `scrollTop`)
+- Large lists (>50 items): virtualize with a maintained Svelte 5 virtual-list library, or `content-visibility: auto` (skips off-screen rendering)
+- No imperative layout reads in reactive code (`getBoundingClientRect`, `offsetHeight`, `offsetWidth`, `scrollTop`) — they force reflow
+- For reactive element/window dimensions, use ResizeObserver-backed bindings (`bind:clientWidth`/`clientHeight`/`offsetWidth`/`contentRect`; `bind:innerWidth`/`innerHeight`/`scrollY` on `<svelte:window>`)
 - Batch DOM reads/writes; avoid interleaving
 - Use `{@attach}` for DOM interactions instead of `$effect` reading layout
 - Add `<link rel="preconnect">` for CDN/asset domains
@@ -90,7 +91,7 @@ Read files, check against rules below. Output concise but comprehensive, sacrifi
 
 - URL reflects state, filters, tabs, pagination, expanded panels in query params
 - Links use `<a>` (Cmd/Ctrl+click, middle-click support)
-- Deep-link all stateful UI (use `$page.url.searchParams` or `goto` with query params)
+- Deep-link all stateful UI (use `page.url.searchParams` from `$app/state`, or `goto` with query params)
 - Destructive actions need confirmation modal or undo window, never immediate
 
 ### Touch & Interaction
@@ -98,7 +99,7 @@ Read files, check against rules below. Output concise but comprehensive, sacrifi
 - `touch-action: manipulation` (prevents double-tap zoom delay)
 - `-webkit-tap-highlight-color` set intentionally
 - `overscroll-behavior: contain` in modals/drawers/sheets
-- During drag: disable text selection, `inert` on dragged elements
+- During drag: disable text selection; `inert` on non-drop-target content (not the dragged element)
 
 ### Safe Areas & Layout
 
@@ -149,7 +150,7 @@ Read files, check against rules below. Output concise but comprehensive, sacrifi
 - `$effect` for derived state (use `$derived` instead)
 - `on:click` instead of `onclick` (legacy Svelte 4 syntax)
 - `<slot>` instead of `{#snippet}` / `{@render}` (legacy Svelte 4 syntax)
-- `use:action` instead of `{@attach}` (legacy Svelte 4 syntax)
+- `use:action` instead of `{@attach}` (attachments, 5.29+, are the recommended replacement)
 
 ## Output Format
 
