@@ -124,7 +124,7 @@ page.getByRole('link', { name: 'Home' }); // For <a>
 
 **Error:** `The $derived rune is only available inside .svelte and .svelte.js/ts files`
 
-**Cause:** Vite's `optimizeDeps` pre-bundles `.svelte.js` files with esbuild (which strips runes) instead of letting vite-plugin-svelte process them.
+**Cause:** Vite's `optimizeDeps` pre-bundles `.svelte.js` files with its dependency pre-bundler (Rolldown since Vite 8, esbuild before), which strips runes, instead of letting vite-plugin-svelte process them.
 
 **Solution:** Exclude the library from optimizeDeps:
 

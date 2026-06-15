@@ -19,6 +19,8 @@ Read files, check against rules below. Output concise but comprehensive, sacrifi
 - Images need `alt` (or `alt=""` if decorative)
 - Decorative icons need `aria-hidden="true"`
 - Async updates (toasts, validation) need `aria-live="polite"`
+- Text contrast at least 4.5:1 (3:1 for large text and UI components/graphics; WCAG 1.4.3, 1.4.11)
+- Interactive target size at least 24x24 CSS px (WCAG 2.5.8)
 - Use semantic HTML (`<button>`, `<a>`, `<label>`, `<table>`) before ARIA
 - Headings hierarchical `<h1>`–`<h6>`; include skip link for main content
 - `scroll-margin-top` on heading anchors

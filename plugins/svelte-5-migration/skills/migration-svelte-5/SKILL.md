@@ -6,6 +6,8 @@ user-invocable: true
 
 # Svelte 3/4 to 5 Migration
 
+**Authoritative reference:** the official [Svelte 5 migration guide](https://svelte.dev/docs/svelte/v5-migration-guide) is the canonical list of breaking changes and gotchas (components are no longer classes → `mount`/`hydrate`; `$effect` is client-only; event-modifier limits; and the rest). This skill is the migration WORKFLOW — order, audit, interop, traps; defer to the guide for the full what-changed.
+
 ## Required companion skills
 
 Invoke these at the indicated points. This skill says WHEN; they say HOW.

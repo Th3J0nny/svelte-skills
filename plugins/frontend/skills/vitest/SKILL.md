@@ -18,8 +18,8 @@ user-invocable: true
 - Upgrade: bump all **`@vitest/*`** together.
 - **`browser.provider`:** `import { playwright } from '@vitest/browser-playwright'` to `provider: playwright()` (factory, not a string).
 - Use `import { page } from 'vitest/browser'`: not `@vitest/browser/context`.
-- In `test.projects`, `plugins` / `resolve` / `optimizeDeps` belong **inside each project**, not only at root: projects do not inherit root plugins.
-- **`optimizeDeps.exclude`:** Svelte 5 runes in `.svelte.js` (e.g. Melt UI) so vite-plugin-svelte handles them, not esbuild.
+- In `test.projects`, `plugins` / `resolve` / `optimizeDeps` belong **inside each project**, not only at root: projects do not inherit root plugins **by default** (`extends: true` inherits the merged root).
+- **`optimizeDeps.exclude`:** Svelte 5 runes in `.svelte.js` (e.g. Melt UI) so vite-plugin-svelte handles them, not Vite's dependency pre-bundler (Rolldown since Vite 8, esbuild before).
 - **`optimizeDeps.include`:** deps that trigger mid-test optimization (e.g. `minisearch`) to reduce flakes.
 - **Storybook:** **`vitest.config.ts`** + `storybookTest` + browser `playwright()`: **storybook-vitest** skill, [manual setup](https://storybook.js.org/docs/writing-tests/integrations/vitest-addon#manual-setup-advanced).
 
