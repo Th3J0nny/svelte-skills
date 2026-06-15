@@ -71,47 +71,50 @@ Test server-side rendering output:
 ```typescript
 // page.ssr.test.ts
 import { test, expect, describe } from 'vitest';
+import { render } from 'svelte/server';
 import PageComponent from './+page.svelte';
 
 describe('Page SSR', () => {
 	test('renders without errors', () => {
 		expect(() =>
-			PageComponent.render({
-				data: { title: 'Welcome' },
+			render(PageComponent, {
+				props: { data: { title: 'Welcome' } },
 			}),
 		).not.toThrow();
 	});
 
 	test('renders correct HTML structure', () => {
-		const { html } = PageComponent.render({
-			data: {
-				title: 'Welcome',
-				items: ['Alpha', 'Beta', 'Gamma'],
+		const { body } = render(PageComponent, {
+			props: {
+				data: {
+					title: 'Welcome',
+					items: ['Alpha', 'Beta', 'Gamma'],
+				},
 			},
 		});
 
-		expect(html).toContain('<h1>Welcome</h1>');
-		expect(html).toContain('<li>Alpha</li>');
-		expect(html).toContain('<li>Beta</li>');
-		expect(html).toContain('<li>Gamma</li>');
+		expect(body).toContain('<h1>Welcome</h1>');
+		expect(body).toContain('<li>Alpha</li>');
+		expect(body).toContain('<li>Beta</li>');
+		expect(body).toContain('<li>Gamma</li>');
 	});
 
 	test('applies correct CSS classes', () => {
-		const { html } = PageComponent.render({
-			data: { status: 'success' },
+		const { body } = render(PageComponent, {
+			props: { data: { status: 'success' } },
 		});
 
 		// Test semantic CSS classes, not implementation details
-		expect(html).toContain('text-success');
-		expect(html).toContain('<svg'); // Icon present
+		expect(body).toContain('text-success');
+		expect(body).toContain('<svg'); // Icon present
 	});
 
 	test('handles empty data gracefully', () => {
-		const { html } = PageComponent.render({
-			data: { items: [] },
+		const { body } = render(PageComponent, {
+			props: { data: { items: [] } },
 		});
 
-		expect(html).toContain('No items found');
+		expect(body).toContain('No items found');
 	});
 });
 ````
