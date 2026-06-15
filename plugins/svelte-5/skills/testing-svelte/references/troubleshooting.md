@@ -152,8 +152,8 @@ optimizeDeps: { exclude: ['melt'] }
 - Use `.first()`, `.nth()`, `.last()` for multiple elements
 - Use `untrack()` for `$derived` values
 - Use `force: true` for animated elements
-- Test form validation lifecycle: initial (valid) → validate → invalid
-  → fix
+- Test form validation lifecycle: initial (valid) to validate to invalid
+  to fix
 - Use real `FormData`/`Request` objects in server tests
 - Test semantic structure and CSS classes
 - Focus on user-visible behavior

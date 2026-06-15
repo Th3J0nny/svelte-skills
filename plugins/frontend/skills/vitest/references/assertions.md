@@ -1,6 +1,6 @@
 # Assertions
 
-A presence-only assertion ships the bug. "Element exists", "value is non-empty", "callback was called" — every one of these passes for behavior that is wrong.
+A presence-only assertion ships the bug. "Element exists", "value is non-empty", "callback was called", every one of these passes for behavior that is wrong.
 
 ## The rule
 
@@ -61,8 +61,8 @@ If received is empty and you change the expected value, you are in class 1 and e
 
 A test file with only `renders without error`, `shows input element`, `displays label` proves the component mounts. It does not prove any behavior. At least one test in the file must drive an interaction and compare the post-state against a computed expected value.
 
-## Lesson — why presence assertions miss regressions
+## Lesson: why presence assertions miss regressions
 
-A real shape this fails in: a UI component (e.g. a datepicker) ships with a regression that swallows the first user click. Every existing test in the file passes: render, placeholder present, label present — because each one only checks presence. The bug stays in for weeks. A first regression test gets written using `not.toBe('')` and also passes on the broken path: any truthy value, including `0` or a wrong unix timestamp, satisfies that assertion.
+A real shape this fails in: a UI component (e.g. a datepicker) ships with a regression that swallows the first user click. Every existing test in the file passes: render, placeholder present, label present, because each one only checks presence. The bug stays in for weeks. A first regression test gets written using `not.toBe('')` and also passes on the broken path: any truthy value, including `0` or a wrong unix timestamp, satisfies that assertion.
 
 A value-equality assertion against a computed expected value is the only kind that would have caught the bug and prevented regression.

@@ -1,6 +1,6 @@
 ---
 name: storybook
-description: Storybook workflow — MCP tools, fixtures, CSS import chains. Auto-invoke when working with Storybook stories or components.
+description: Storybook workflow, MCP tools, fixtures, CSS import chains. Auto-invoke when working with Storybook stories or components.
 user-invocable: true
 ---
 
@@ -9,8 +9,8 @@ user-invocable: true
 - ALWAYS use `mcp__storybook__get-storybook-story-instructions` before writing stories.
 - ALWAYS use `mcp__storybook__preview-stories` to preview stories after writing them.
 - Stories use `parameters.fixtures` for fixture overrides.
-- Storybook is usually already running — just navigate with Playwright MCP.
-- Verify every story in the browser via Playwright MCP — don't assume it works.
+- Storybook is usually already running: just navigate with Playwright MCP.
+- Verify every story in the browser via Playwright MCP: don't assume it works.
 - CSS imports: trace chains through BOTH `App.svelte` AND `.storybook/preview.ts`. Moving imports out of the SCSS chain breaks Storybook unless also added to `preview.ts` or `storybook.scss`.
 
 ## Svelte 4 writable stores need wrapper components in stories
@@ -19,7 +19,7 @@ Components that import and read from Svelte 4 module-level
 `writable()` stores (from `svelte/store`) render with default/
 empty data in Storybook unless the stores are populated before
 the component mounts. This does NOT apply to Svelte 5 runes-
-based state in `.svelte.ts` modules — those are reactive on
+based state in `.svelte.ts` modules, those are reactive on
 their own.
 
 **Pattern:** Create a `<ComponentName>Wrapper.svelte` that:
@@ -29,7 +29,7 @@ their own.
    `writable()` store the component imports
 3. Wraps children in a layout div with sensible dimensions
 
-Use `asChild` in the story — NEVER decorators for components
+Use `asChild` in the story, NEVER decorators for components
 that depend on Svelte 4 writable stores. Decorators lose
 complex args (Writable stores, objects with methods) through
 Storybook's arg serialization.
@@ -68,7 +68,7 @@ For critical callbacks (onChange, onSubmit, onParameterChanged):
 - Use a tracking function that captures args
 - Add a play function that triggers the callback and verifies
   what was received
-- At minimum, verify the callback fires — don't just noop it
+- At minimum, verify the callback fires: don't just noop it
 
 A common failure: a `noop` callback hides a bug where
 onChange passes full selection objects instead of expected
@@ -81,4 +81,4 @@ When adding `skip-vitest` to a story, IMMEDIATELY verify it
 renders correctly in the Storybook UI via Playwright MCP.
 Navigate to the story URL, wait for render, take a screenshot,
 check console for 0 errors. `skip-vitest` means "can't
-automate as vitest test" — it does NOT mean "don't verify."
+automate as vitest test", it does NOT mean "don't verify."

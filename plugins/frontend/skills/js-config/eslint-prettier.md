@@ -4,7 +4,7 @@
 
 ESLint and Prettier can fight over formatting. ESLint has formatting rules (indent, quotes, semi). Prettier has opinions about the same things. If both are active, you get conflicting errors.
 
-## Three Packages — Different Jobs
+## Three Packages: Different Jobs
 
 ### `eslint-config-prettier`
 
@@ -42,9 +42,9 @@ export default [
 ]
 ```
 
-**Generally not recommended.** Slower than running Prettier separately. Worse editor experience — red squiggles for formatting. Prefer running Prettier via format-on-save or `prettier --check` in CI.
+**Generally not recommended.** Slower than running Prettier separately. Worse editor experience, red squiggles for formatting. Prefer running Prettier via format-on-save or `prettier --check` in CI.
 
-**Pattern seen in the wild:** Register plugin but disable rule (`'prettier/prettier': 'off'`). Registers Prettier as plugin without running it as linter. Unclear benefit — possibly leftover from migration.
+**Pattern seen in the wild:** Register plugin but disable rule (`'prettier/prettier': 'off'`). Registers Prettier as plugin without running it as linter. Unclear benefit, possibly leftover from migration.
 
 ### `svelte.configs.prettier` (built into `eslint-plugin-svelte`)
 
@@ -173,8 +173,8 @@ Svelte 5 runes modules (`*.svelte.ts`, `*.svelte.js`) are pure TS/JS. `svelte-es
 
 ## Resources
 
-- [You Probably Don't Need eslint-config-prettier](https://www.joshuakgoldberg.com/blog/you-probably-dont-need-eslint-config-prettier-or-eslint-plugin-prettier/) — Josh Goldberg
-- [ESLint discussion #17971](https://github.com/eslint/eslint/discussions/17971) — maintainer consensus
-- [eslint-config-prettier repo](https://github.com/prettier/eslint-config-prettier) — official docs, CLI checker, flat config
-- [Prettier: Integrating with Linters](https://prettier.io/docs/integrating-with-linters) — official recommendation
-- [eslint-plugin-svelte user guide](https://sveltejs.github.io/eslint-plugin-svelte/user-guide/) — svelte.configs.prettier docs
+- [You Probably Don't Need eslint-config-prettier](https://www.joshuakgoldberg.com/blog/you-probably-dont-need-eslint-config-prettier-or-eslint-plugin-prettier/): Josh Goldberg
+- [ESLint discussion #17971](https://github.com/eslint/eslint/discussions/17971): maintainer consensus
+- [eslint-config-prettier repo](https://github.com/prettier/eslint-config-prettier): official docs, CLI checker, flat config
+- [Prettier: Integrating with Linters](https://prettier.io/docs/integrating-with-linters): official recommendation
+- [eslint-plugin-svelte user guide](https://sveltejs.github.io/eslint-plugin-svelte/user-guide/): svelte.configs.prettier docs

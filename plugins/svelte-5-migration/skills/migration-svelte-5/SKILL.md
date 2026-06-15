@@ -4,12 +4,11 @@ description: "Use when migrating .svelte files from Svelte 3/4 to Svelte 5 runes
 user-invocable: true
 ---
 
-# Svelte 3/4 → 5 Migration
+# Svelte 3/4 to 5 Migration
 
 ## Required companion skills
 
-Invoke these at the indicated points. This skill says WHEN —
-they say HOW.
+Invoke these at the indicated points. This skill says WHEN; they say HOW.
 
 | Skill | When | Source |
 | --- | --- | --- |
@@ -50,7 +49,7 @@ Nothing gets edited until baselines are recorded.
 2. Mark each component: Svelte 4 or 5.
 3. If any component uses a third-party Svelte wrapper (e.g.
    autocomplete, datepicker), check whether its callback and
-   binding APIs return different data shapes — this is a
+   binding APIs return different data shapes, this is a
    common source of silent regressions during migration.
 4. If Svelte 3/4 `writable()` stores (from `svelte/store`) are
    used, check how many components consume them. If all
@@ -60,11 +59,11 @@ Nothing gets edited until baselines are recorded.
 
 ### `npx sv migrate svelte-5` (use with caution)
 
-Svelte provides an auto-migration script. It converts `let` →
-`$state`, `on:click` → `onclick`, slots → render tags. But:
+Svelte provides an auto-migration script. It converts `let` to
+`$state`, `on:click` to `onclick`, slots to render tags. But:
 
 - It does NOT convert `createEventDispatcher` (too risky)
-- It converts `slot="name"` → `{#snippet}` which fails
+- It converts `slot="name"` to `{#snippet}` which fails
   svelte-check when the child is still Svelte 4
 - It may convert `$:` to `run()` from `svelte/legacy` instead
   of `$derived`/`$effect`
@@ -85,21 +84,21 @@ NOT run on the entire codebase at once.
 
 ## Phase 4: Pattern conversion reference
 
-### `$:` → `$derived` or `$effect`
+### `$:` to `$derived` or `$effect`
 
 | Svelte 4                 | Svelte 5                                | Notes                                               |
 | ------------------------ | --------------------------------------- | --------------------------------------------------- |
 | `$: foo = expr`          | `let foo = $derived(expr)`              | Pure derivation, no side effects                    |
 | `$: { sideEffect() }`    | `$effect(() => { sideEffect() })`       | Only for true side effects (DOM, fetch, logging)    |
-| `$: if (cond) { ... }`   | `$effect(() => { if (cond) { ... } })`  | Review carefully — race conditions, execution order |
+| `$: if (cond) { ... }`   | `$effect(() => { if (cond) { ... } })`  | Review carefully, race conditions, execution order |
 | `$: (dep, action())`     | `$effect(() => { void dep; action() })` | Explicit dependency tracking                        |
 | `$: ({ a, b } = $store)` | `let a = $derived($store.a)` per field  | Don't destructure Svelte 3/4 stores in effects      |
 
 **NEVER use `$effect` to set `$state`.** Use `$derived` instead.
-Test the runtime behavior — `$:` ran synchronously before
+Test the runtime behavior, `$:` ran synchronously before
 render, `$effect` runs asynchronously after DOM updates.
 
-### `export let` → `$props()`
+### `export let` to `$props()`
 
 ```svelte
 // Before
@@ -126,7 +125,7 @@ let { count = $bindable(0) }: { count?: number } = $props()
 
 Check ALL parents for `bind:` usage before removing `export let`.
 
-### `$$props` / `$$restProps` → destructured rest
+### `$$props` / `$$restProps` to destructured rest
 
 ```svelte
 // Before
@@ -137,7 +136,7 @@ let { class: className, ...rest } = $props()
 <button class={className} {...rest}>click</button>
 ```
 
-### `createEventDispatcher` → callback props
+### `createEventDispatcher` to callback props
 
 ```svelte
 // Before
@@ -154,7 +153,7 @@ Svelte 4 parents use `on:valuesChanged={handler}` which does NOT
 map to callback props on a runes-mode child. Use the legacy
 import as a stopgap until the parent is migrated.
 
-### `on:click` → `onclick`
+### `on:click` to `onclick`
 
 ```svelte
 // Before
@@ -170,16 +169,16 @@ Event modifiers (`|once`, `|preventDefault`) become wrapper
 functions or inline logic. `on:` syntax still works but is
 deprecated.
 
-### Slots → snippets (direction matters)
+### Slots to snippets (direction matters)
 
-**Svelte 5 parent → Svelte 4 child** (child uses `<slot>`):
+**Svelte 5 parent to Svelte 4 child** (child uses `<slot>`):
 
-- Use `slot="header"` attribute — passes svelte-check
-- Do NOT use `{#snippet header()}` — fails svelte-check
+- Use `slot="header"` attribute: passes svelte-check
+- Do NOT use `{#snippet header()}`: fails svelte-check
   ([sveltejs/language-tools#2716](https://github.com/sveltejs/language-tools/issues/2716))
 - Use `on:click` / `on:event` for Svelte 4 child events
 
-**Svelte 5 parent → Svelte 5 child** (child uses `{@render}`):
+**Svelte 5 parent to Svelte 5 child** (child uses `{@render}`):
 
 ```svelte
 // Child
@@ -194,7 +193,7 @@ let { header, children } = $props()
 </Child>
 ```
 
-### `<svelte:component>` → direct rendering
+### `<svelte:component>` to direct rendering
 
 ```svelte
 // Before — required for dynamic components
@@ -204,9 +203,9 @@ let { header, children } = $props()
 <DynamicComp {prop} />
 ```
 
-### `onMount` / `onDestroy` → `$effect` (context-dependent)
+### `onMount` / `onDestroy` to `$effect` (context-dependent)
 
-**Reactive subscription** — replace with `$effect`:
+**Reactive subscription**, replace with `$effect`:
 
 ```svelte
 // Before
@@ -219,7 +218,7 @@ $effect(() => { handler($store) })
 ```
 
 Note: `store.subscribe(handler)` passes the store value to
-`handler`. The `$effect` replacement must do the same —
+`handler`. The `$effect` replacement must do the same as
 `handler($store)`, not `handler()`.
 
 If the handler needs cleanup, return a teardown function:
@@ -231,7 +230,7 @@ $effect(() => {
 })
 ```
 
-**One-time init** — keep `onMount`:
+**One-time init**, keep `onMount`:
 
 ```svelte
 onMount(() => { fetchInitialData() })
@@ -254,24 +253,24 @@ must run before DOM updates (replaces `beforeUpdate`).
 Stories must exist and render correctly before any test can
 verify behavior:
 
-1. Use `asChild` pattern — NOT decorators for components that
+1. Use `asChild` pattern: NOT decorators for components that
    depend on Svelte 3/4 `writable()` stores (from `svelte/store`)
 2. Create a wrapper component that calls `store.set()` with
    mock data + `setContext()` for required Svelte contexts
 3. Use `fn()` from `storybook/test` as callback spy for critical
-   callbacks — NOT `noop`. Pass the spy in the `asChild` markup
+   callbacks, NOT `noop`. Pass the spy in the `asChild` markup
    AND assert it in the play function.
 4. Play functions MUST interact (click, type, select) AND assert
-   specific values — not just "something rendered"
+   specific values, not just "something rendered"
 5. Lint the story, run story tests, verify in Storybook browser
-   UI via Playwright — check console for errors
+   UI via Playwright, check console for errors
 
 ## Phase 7: Per-file checklist (after each migration)
 
 Each step gates the next:
 
-1. Project lint/typecheck — all checks must pass
-2. Svelte autofixer — zero issues
+1. Project lint/typecheck: all checks must pass
+2. Svelte autofixer: zero issues
 3. Story exists and passes (Phase 6 done first)
 4. Tests pass. Three testing layers, pick per component:
    - **Storybook + MSW**: data flow (callbacks, API calls, store
@@ -290,18 +289,18 @@ Each step gates the next:
 
 ## Known traps
 
-1. **Third-party wrapper callback vs binding data shapes** —
+1. **Third-party wrapper callback vs binding data shapes**:
    callbacks and bound values may return different types (e.g.
    full objects vs extracted IDs). When dropping `bind:value`
    for callback-only, extract the value in the parent.
-2. **`{#snippet}` on Svelte 4 children** — fails svelte-check.
+2. **`{#snippet}` on Svelte 4 children**: fails svelte-check.
    Use `slot="name"` instead.
    ([sveltejs/language-tools#2716](https://github.com/sveltejs/language-tools/issues/2716))
-3. **Nested `Writable<Record<string, Writable<...>>>`** —
+3. **Nested `Writable<Record<string, Writable<...>>>`**:
    conflicts with `svelte/require-store-reactive-access`. Use
    `in` operator for existence checks.
-4. **Storybook decorators lose complex args** — Svelte 3/4
+4. **Storybook decorators lose complex args**: Svelte 3/4
    `writable()` stores, objects with methods get serialized
    away. Use `asChild` with wrapper components instead.
-5. **`noop` callbacks hide bugs** — `() => {}` silently swallows
+5. **`noop` callbacks hide bugs**: `() => {}` silently swallows
    wrong data types. Use `fn()` spy and assert in play functions.

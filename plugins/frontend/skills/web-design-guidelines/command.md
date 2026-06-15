@@ -6,7 +6,7 @@
 
 Review these files for compliance: $ARGUMENTS
 
-Read files, check against rules below. Output concise but comprehensive—sacrifice grammar for brevity. High signal-to-noise.
+Read files, check against rules below. Output concise but comprehensive, sacrifice grammar for brevity. High signal-to-noise.
 
 ## Rules
 
@@ -48,10 +48,10 @@ Read files, check against rules below. Output concise but comprehensive—sacrif
 
 - Honor `prefers-reduced-motion` (provide reduced variant or disable)
 - Animate `transform`/`opacity` only (compositor-friendly)
-- Never `transition: all`—list properties explicitly
+- Never `transition: all`, list properties explicitly
 - Set correct `transform-origin`
 - SVG: transforms on `<g>` wrapper with `transform-box: fill-box; transform-origin: center`
-- Animations interruptible—respond to user input mid-animation
+- Animations interruptible, respond to user input mid-animation
 - Svelte transitions (`transition:`, `in:`, `out:`) respect `prefers-reduced-motion`
 
 ### Typography
@@ -67,7 +67,7 @@ Read files, check against rules below. Output concise but comprehensive—sacrif
 
 - Text containers handle long content: `truncate`, `line-clamp-*`, or `overflow-wrap: break-word`
 - Flex children need `min-width: 0` to allow text truncation
-- Handle empty states—don't render broken UI for empty strings/arrays
+- Handle empty states, don't render broken UI for empty strings/arrays
 - User-generated content: anticipate short, average, and very long inputs
 
 ### Images
@@ -88,10 +88,10 @@ Read files, check against rules below. Output concise but comprehensive—sacrif
 
 ### Navigation & State
 
-- URL reflects state—filters, tabs, pagination, expanded panels in query params
+- URL reflects state, filters, tabs, pagination, expanded panels in query params
 - Links use `<a>` (Cmd/Ctrl+click, middle-click support)
 - Deep-link all stateful UI (use `$page.url.searchParams` or `goto` with query params)
-- Destructive actions need confirmation modal or undo window—never immediate
+- Destructive actions need confirmation modal or undo window, never immediate
 
 ### Touch & Interaction
 

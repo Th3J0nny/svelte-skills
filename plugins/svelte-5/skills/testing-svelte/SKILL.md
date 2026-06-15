@@ -27,24 +27,24 @@ test("button click increments counter", async () => {
 ## Interaction Tests Are Mandatory
 
 **Every test for an interactive component MUST include meaningful
-interaction.** A render-only test proves the component mounts — it
+interaction.** A render-only test proves the component mounts, it
 does NOT prove it works.
 
 For components with inputs, autocompletes, buttons, or forms:
 
-1. **Interact** — click, type, select, submit
-2. **Assert the outcome** — the selected value text, the callback
+1. **Interact**: click, type, select, submit
+2. **Assert the outcome**: the selected value text, the callback
    data content, the DOM state change
-3. **Never silently skip** — no `if (items.length > 0)` guards
+3. **Never silently skip**: no `if (items.length > 0)` guards
    that skip the interaction when the precondition fails. ASSERT
    the precondition instead.
-4. **Verify callback data** — use fixture components with
+4. **Verify callback data**: use fixture components with
    data-testid output divs to capture and assert what callbacks
-   received. Checking "callback was called" is not enough —
+   received. Checking "callback was called" is not enough;
    check WHAT it was called with.
 
 Example failure: tests that "verified" autocomplete interaction
-by checking "a selection exists" without checking which value —
+by checking "a selection exists" without checking which value;
 this missed a bug where onChange returned objects instead of
 strings.
 
@@ -68,10 +68,10 @@ strings.
 
 ## Running Tests
 
-- **Storybook + Vitest** (`@storybook/addon-vitest`): `svelte-5:storybook-vitest` skill — `vitest.config.ts`, `test.projects` entry, `vitest --project=storybook`, `storybookUrl` for CI links.
-- `pnpm test:unit` or `vitest run` — run vitest browser tests only (fast, no dev server needed)
-- `pnpm test` — runs vitest + Playwright e2e concurrently (e2e needs a dev server)
-- `pnpm validate` — runs vitest + lint + typecheck + svelte-check (CI pipeline, no e2e)
+- **Storybook + Vitest** (`@storybook/addon-vitest`): `svelte-5:storybook-vitest` skill: `vitest.config.ts`, `test.projects` entry, `vitest --project=storybook`, `storybookUrl` for CI links.
+- `pnpm test:unit` or `vitest run`: run vitest browser tests only (fast, no dev server needed)
+- `pnpm test`: runs vitest + Playwright e2e concurrently (e2e needs a dev server)
+- `pnpm validate`: runs vitest + lint + typecheck + svelte-check (CI pipeline, no e2e)
 
 ## After Writing/Editing Test Files
 
@@ -84,9 +84,9 @@ strings.
 - Test files: `.svelte.test.ts` (client), `.ssr.test.ts` (SSR),
   `server.test.ts` (API)
 - Import `page` from `vitest/browser`, not `@vitest/browser/context`
-- Locators have no `.focus()` method — use `.click()` to focus elements
+- Locators have no `.focus()` method: use `.click()` to focus elements
 - `<a href>` clicks in tests navigate the iframe away, crashing the test. Avoid clicking links; test radio/button state instead.
-- `vi.waitFor()` is unreliable in browser mode — prefer `await expect.element()` retry or `await new Promise(r => setTimeout(r, N))` for async init.
+- `vi.waitFor()` is unreliable in browser mode: prefer `await expect.element()` retry or `await new Promise(r => setTimeout(r, N))` for async init.
 
 ## Astro + Svelte Projects
 

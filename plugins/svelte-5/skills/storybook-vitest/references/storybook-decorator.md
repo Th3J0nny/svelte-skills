@@ -24,7 +24,7 @@ DO reach the component.
 
 When a context-providing wrapper (e.g. `CardWrapper`) sits between the decorator and the
 story, it's tempting to blame the wrapper for blocking args. This is usually wrong. The
-wrapper **swallows Svelte 5 errors** — the real errors are only visible in the Storybook
+wrapper **swallows Svelte 5 errors**, the real errors are only visible in the Storybook
 browser console, not in vitest output.
 
 ## Real root cause: `props_invalid_value`
@@ -49,7 +49,7 @@ Svelte 5 throws `props_invalid_value`:
 **ALWAYS debug in the browser FIRST:**
 
 1. Open the story at your Storybook URL (default `localhost:6006`) via Playwright
-2. Check console errors — the browser shows the full Svelte error with component stack trace
+2. Check console errors: the browser shows the full Svelte error with component stack trace
 3. vitest only shows "test failed" without component details
 4. The browser error points to the exact file and line
 
@@ -78,7 +78,7 @@ component rendering:
 ```
 
 **Do not combine `asChild` with a decorator on the same story.** DecoratorHandler renders
-`<Component {...args} />` inside the decorator — this instantiates the component WITHOUT
+`<Component {...args} />` inside the decorator, this instantiates the component WITHOUT
 the props you pass manually in the `asChild` content. Result: the component renders twice
 (once broken via decorator, once correct via `asChild`), and the broken render crashes
 with e.g. `Cannot read properties of undefined`.
