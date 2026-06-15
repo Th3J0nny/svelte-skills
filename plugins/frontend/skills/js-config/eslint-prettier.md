@@ -115,6 +115,7 @@ const tsParser = tseslint.parser
 const astroParser = astro.parser
 
 export default defineConfig([
+  // defineConfig() flattens nested config arrays, so array presets (tseslint/astro configs.recommended) need no ... spread
   { languageOptions: { globals: { ...globals.browser, ...globals.node } } },
   js.configs.recommended,
   tseslint.configs.recommended,

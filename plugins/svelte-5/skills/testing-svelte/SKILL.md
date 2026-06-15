@@ -53,7 +53,6 @@ strings.
 - **Always use locators**: `page.getBy*()` methods, never containers
 - **Multiple elements**: Use `.first()`, `.nth()`, `.last()` to avoid
   strict mode violations
-- **Use untrack()**: When accessing `$derived` values in tests
 - **Real API objects**: Test with FormData/Request, minimal mocking
 
 ## Reference Files

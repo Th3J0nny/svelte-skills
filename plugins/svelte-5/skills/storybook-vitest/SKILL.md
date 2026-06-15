@@ -45,7 +45,7 @@ of strings).
 ```svelte
 <script module>
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import { expect, within, userEvent } from "vitest/browser";
+  import { expect, within, userEvent } from "storybook/test";
   import MyComponent from "./MyComponent.svelte";
 
   const { Story } = defineMeta({
@@ -138,7 +138,7 @@ Prefer **`pnpm exec storybook add @storybook/addon-vitest`** ([automatic install
 
 **Manual** wiring follows [example configuration files](https://storybook.js.org/docs/writing-tests/integrations/vitest-addon#example-configuration-files). Vitest **4** example uses **`mergeConfig(viteConfig, defineConfig({ test: { projects: […] } }))`** and a Storybook project with **`extends: true`**.
 
-- **`setupFiles`:** the plugin **auto-injects** its own setup files (`@storybook/addon-vitest/internal/setup-file` and `setup-file-with-project-annotations`). You do **not** need a manual `.storybook/vitest.setup.ts` unless you have custom per-test setup beyond what preview.ts provides. The doc example shows `setupFiles` but the plugin handles this internally.
+- **`setupFiles`:** since **Storybook 10.3** the plugin applies preview annotations automatically — it always injects `@storybook/addon-vitest/internal/setup-file`, and injects `setup-file-with-project-annotations` **only when you have not supplied a `setProjectAnnotations` setup file**. So a manual `.storybook/vitest.setup.ts` is **not required** unless you have custom per-test setup beyond `preview.ts`; if you keep one that calls `setProjectAnnotations`, the plugin defers to it. Before 10.3 that file, referenced via `setupFiles`, was required — which is why the doc example still shows it.
 - **`storybookScript`:** docs: _“This should match your **`package.json`** script to run Storybook”_ (e.g. **`pnpm storybook --no-open`**). You may **prefix** the same command with setup steps (i18n mocks, env) so watch-mode debugging matches dev.
 - **`storybookUrl`:** default **`http://localhost:6006`**: must be **reachable** for failure links ([debugging](https://storybook.js.org/docs/writing-tests/integrations/vitest-addon#debugging)). For **CI**, set the **full URL** of the **published** Storybook (including **path prefix** if hosted under a subpath) so output links work ([CI](https://storybook.js.org/docs/writing-tests/integrations/vitest-addon#in-ci), [Testing in CI](https://storybook.js.org/docs/writing-tests/in-ci#21-debugging-test-failures-in-ci)).
 - **`storybookScript` behavior:** in **watch** mode, the plugin starts Storybook via this script **only if** nothing is already available at **`storybookUrl`** ([API](https://storybook.js.org/docs/writing-tests/integrations/vitest-addon#storybookscript)).
@@ -185,6 +185,7 @@ const testConfig: UserConfig = {
         },
         test: {
           name: "storybook",
+          // no setupFiles: since Storybook 10.3 the plugin auto-applies preview annotations (see setupFiles note above)
           browser: {
             enabled: true,
             headless: true,

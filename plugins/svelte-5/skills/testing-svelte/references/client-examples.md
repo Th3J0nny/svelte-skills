@@ -8,7 +8,7 @@ Real browser testing with user interactions:
 // button.svelte.test.ts
 import { render } from 'vitest-browser-svelte';
 import { test, expect, describe } from 'vitest';
-import { userEvent } from '@vitest/browser/context';
+import { userEvent } from 'vitest/browser';
 import Button from './button.svelte';
 
 describe('Button Component', () => {
@@ -28,7 +28,7 @@ describe('Button Component', () => {
 		render(Button, { props: { label: 'Press me' } });
 
 		const button = page.getByRole('button', { name: /press me/i });
-		await button.focus();
+		await button.element().focus();
 		await userEvent.keyboard('{Enter}');
 
 		await expect.element(button).toHaveTextContent('Clicked: 1');
@@ -58,7 +58,7 @@ describe('Button Component', () => {
 // counter.svelte.test.ts
 import { render } from 'vitest-browser-svelte';
 import { test, expect } from 'vitest';
-import { untrack, flushSync } from 'svelte';
+import { flushSync } from 'svelte';
 import Counter from './counter.svelte';
 
 test('$state and $derived reactivity', async () => {
@@ -73,29 +73,28 @@ test('$state and $derived reactivity', async () => {
 	// Force synchronous update
 	flushSync(() => {});
 
-	// Access $derived value with untrack
-	const doubled = untrack(() => component.doubled);
-	expect(doubled).toBe(2);
+	// Access $derived value directly
+	expect(component.doubled).toBe(2);
 });
 
 test('form validation lifecycle', async () => {
 	const { component } = render(FormComponent);
 
 	// Initially valid (no validation run yet)
-	expect(untrack(() => component.isFormValid())).toBe(true);
+	expect(component.isFormValid()).toBe(true);
 
 	// Trigger validation
 	component.validateAllFields();
 
 	// Now invalid (empty required fields)
-	expect(untrack(() => component.isFormValid())).toBe(false);
+	expect(component.isFormValid()).toBe(false);
 
 	// Fix validation errors
 	component.email.value = 'test@example.com';
 	component.validateAllFields();
 
 	// Valid again
-	expect(untrack(() => component.isFormValid())).toBe(true);
+	expect(component.isFormValid()).toBe(true);
 });
 ```
 

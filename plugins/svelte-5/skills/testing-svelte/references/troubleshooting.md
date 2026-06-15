@@ -35,19 +35,19 @@ await expect.element(element).toHaveTextContent('text');
 
 ### Error 3: Cannot Access $derived
 
-**Error:** Cannot read $derived value in test
+**Error:** Unsure whether reading a `$derived`/`$state` value in a test needs `untrack()`
 
-**Cause:** Svelte 5 reactive values need `untrack()`
+**Cause:** Normally it does not — read it directly (the Svelte testing docs do). `untrack()` only exempts a read from dependency tracking *inside* a `$derived`/`$effect`; you might want it when reading state inside an `$effect.root`-wrapped effect test, and [sveltest](https://sveltest.dev/docs/runes-testing) wraps reads in it defensively.
 
 **Solution:**
 
 ```typescript
 import { untrack } from 'svelte';
 
-// Before
-const value = component.derivedValue; // Error!
+// ✅ Read directly — works
+const value = component.derivedValue;
 
-// After
+// ✅ Defensive (sveltest) — untrack() prevents the read leaking as a dependency
 const value = untrack(() => component.derivedValue);
 ```
 
@@ -150,7 +150,7 @@ optimizeDeps: { exclude: ['melt'] }
 - Use locators (`page.getBy*()`) - never containers
 - Always `await expect.element()` for locator assertions
 - Use `.first()`, `.nth()`, `.last()` for multiple elements
-- Use `untrack()` for `$derived` values
+- Read `$derived` values directly
 - Use `force: true` for animated elements
 - Test form validation lifecycle: initial (valid) to validate to invalid
   to fix
@@ -216,14 +216,17 @@ test('API endpoint', async () => {
  const response = await POST({ request });
  expect(response.status).toBe(200);
 });
+```
 
+```typescript
 // SSR test
 // page.ssr.test.ts
+import { render } from 'svelte/server';
 import PageComponent from './+page.svelte';
 
 test('SSR rendering', () => {
- const { html } = PageComponent.render({ data: {} });
- expect(html).toContain('expected content');
+ const { body } = render(PageComponent, { props: { data: {} } });
+ expect(body).toContain('expected content');
 });
 ```
 
