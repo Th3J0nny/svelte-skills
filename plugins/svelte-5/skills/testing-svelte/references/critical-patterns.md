@@ -94,7 +94,7 @@ await input.fill('text', { force: true });
 
 ### Conditional `{@attach}` to keep third-party-bridging wrappers test-mountable
 
-When a wrapper uses `{@attach}` to bridge into a third-party DOM library (maplibre, leaflet, d3, tippy), the factory normally runs on mount — which boots the library, fails in vitest where no real library context exists, and crashes the test before it can assert anything.
+When a wrapper uses `{@attach}` to bridge into a third-party DOM library (maplibre, leaflet, d3, tippy), the factory normally runs on mount, which boots the library, fails in vitest where no real library context exists, and crashes the test before it can assert anything.
 
 Gate the attachment expression on the prerequisite. Falsy values are treated as no attachment per [Svelte `@attach` docs](https://svelte.dev/docs/svelte/@attach):
 
@@ -103,7 +103,7 @@ Gate the attachment expression on the prerequisite. Falsy values are treated as 
 <div {@attach appState.condition ? popupAttachment : undefined}>...</div>
 ```
 
-In production `appState.condition` is truthy after the third-party context mounts, so the attachment fires. In vitest `appState.condition` is null by default, so the factory never runs — but the wrapper's inner markup (the popup body div) still renders, which is what most tests assert against.
+In production `appState.condition` is truthy after the third-party context mounts, so the attachment fires. In vitest `appState.condition` is null by default, so the factory never runs, but the wrapper's inner markup (the popup body div) still renders, which is what most tests assert against.
 
 ### Seed module-level `$state` synchronously in the test harness
 

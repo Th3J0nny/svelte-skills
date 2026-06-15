@@ -73,7 +73,7 @@ For local development/testing:
 /plugin install agent@ronin-skills
 ```
 
-**Svelte MCP** (required by `svelte-5` and `svelte-5-migration`). Provides `svelte:svelte-code-writer`, `svelte:svelte-core-bestpractices`, and the Svelte autofixer (`mcp__svelte__svelte-autofixer`):
+**Svelte MCP** (required by `svelte-5` and `svelte-5-migration`). Provides the Svelte autofixer, docs lookup, the `svelte:svelte-code-writer` / `svelte:svelte-core-bestpractices` skills, and the `svelte:svelte-file-editor` subagent. See the [official Svelte AI tools docs](https://svelte.dev/docs/ai/overview):
 
 ```
 /plugin marketplace add sveltejs/ai-tools

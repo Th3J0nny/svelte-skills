@@ -1,6 +1,6 @@
 ---
 name: code-style
-description: "Code style rules for all languages — variable naming, brace style, HTML data attributes, CSS nesting. Auto-invoke when editing code files, writing new functions, or naming variables. Complements svelte-5:code-style-svelte (Svelte-specific) and frontend:css-nesting (full nesting workflow)."
+description: "Code style rules for all languages: variable naming, brace style, HTML data attributes, CSS nesting. Auto-invoke when editing code files, writing new functions, or naming variables."
 user-invocable: true
 ---
 
@@ -14,8 +14,9 @@ Single-line `if` without braces is OK only when the entire statement fits on one
 // OK — fits on one line
 if (x) doThing();
 
-// NOT OK — body wraps, needs braces
-if (x) doThing();
+// NOT OK — body wraps to the next line, needs braces
+if (x)
+  doThing();
 
 // Correct
 if (x) {
@@ -53,7 +54,7 @@ Use semantic, human-readable names. The name should say what the thing IS, not s
 
 ## Function Naming
 
-Functions are verbs. Past-participle nouns (`mountedPopup`) lie about lifecycle — wrong for a factory that mounts lazily. Use `createComponentPopup`.
+Functions are verbs. Past-participle nouns (`mountedPopup`) lie about lifecycle, wrong for a factory that mounts lazily. Use `createComponentPopup`.
 
 Conventions: `createX`/`buildX` (factory), `getX` (sync read), `loadX`/`fetchX` (async), `isX`/`hasX` (predicate), `toX` (transform), `attachX`/`detachX` (lifecycle), `onX`/`handleX` (event).
 
@@ -96,10 +97,10 @@ Always nest CSS with `&`. Never write flat selectors as separate rules.
 }
 ```
 
-This applies to all CSS — component styles, global stylesheets, everywhere. For the full nesting workflow (specificity analysis, block ordering, stylelint compliance), use `frontend:css-nesting`.
+This applies to all CSS, component styles, global stylesheets, everywhere. For the full nesting workflow (specificity analysis, block ordering, stylelint compliance), use `frontend:css-nesting`.
 
 ## Related Skills
 
-- `frontend:editing` — File editing discipline, comment preservation, refactoring safety.
-- `svelte-5:code-style-svelte` — Svelte-specific style rules (component docs, reactivity patterns).
-- `frontend:css-nesting` — Full CSS nesting workflow with specificity analysis and stylelint compliance.
+- `frontend:editing`: File editing discipline, comment preservation, refactoring safety.
+- `svelte-5:code-style-svelte`: Svelte-specific style rules (component docs, reactivity patterns).
+- `frontend:css-nesting`: Full CSS nesting workflow with specificity analysis and stylelint compliance.

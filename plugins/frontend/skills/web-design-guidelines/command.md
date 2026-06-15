@@ -6,7 +6,7 @@
 
 Review these files for compliance: $ARGUMENTS
 
-Read files, check against rules below. Output concise but comprehensive—sacrifice grammar for brevity. High signal-to-noise.
+Read files, check against rules below. Output concise but comprehensive, sacrifice grammar for brevity. High signal-to-noise.
 
 ## Rules
 
@@ -14,11 +14,13 @@ Read files, check against rules below. Output concise but comprehensive—sacrif
 
 - Icon-only buttons need `aria-label`
 - Form controls need `<label>` or `aria-label`
-- Interactive elements need keyboard handlers (`onkeydown`/`onkeyup`)
+- Native `<button>`/`<a>` handle Enter/Space automatically; only non-semantic interactive elements (`div`/`span` with `role`) need explicit key handlers (`onkeydown`/`onkeyup`)
 - `<button>` for actions, `<a>` for navigation (not `<div onclick>`)
 - Images need `alt` (or `alt=""` if decorative)
 - Decorative icons need `aria-hidden="true"`
 - Async updates (toasts, validation) need `aria-live="polite"`
+- Text contrast at least 4.5:1 (3:1 for large text and UI components/graphics; WCAG 1.4.3, 1.4.11)
+- Interactive target size at least 24x24 CSS px (WCAG 2.5.8)
 - Use semantic HTML (`<button>`, `<a>`, `<label>`, `<table>`) before ARIA
 - Headings hierarchical `<h1>`–`<h6>`; include skip link for main content
 - `scroll-margin-top` on heading anchors
@@ -48,10 +50,10 @@ Read files, check against rules below. Output concise but comprehensive—sacrif
 
 - Honor `prefers-reduced-motion` (provide reduced variant or disable)
 - Animate `transform`/`opacity` only (compositor-friendly)
-- Never `transition: all`—list properties explicitly
+- Never `transition: all`, list properties explicitly
 - Set correct `transform-origin`
 - SVG: transforms on `<g>` wrapper with `transform-box: fill-box; transform-origin: center`
-- Animations interruptible—respond to user input mid-animation
+- Animations interruptible, respond to user input mid-animation
 - Svelte transitions (`transition:`, `in:`, `out:`) respect `prefers-reduced-motion`
 
 ### Typography
@@ -61,13 +63,13 @@ Read files, check against rules below. Output concise but comprehensive—sacrif
 - Non-breaking spaces: `10&nbsp;MB`, `⌘&nbsp;K`, brand names
 - Loading states end with `…`: `"Loading…"`, `"Saving…"`
 - `font-variant-numeric: tabular-nums` for number columns/comparisons
-- Use `text-wrap: balance` or `text-pretty` on headings (prevents widows)
+- Use `text-wrap: balance` on headings; `text-wrap: pretty` on body paragraphs (prevents orphans/widows)
 
 ### Content Handling
 
 - Text containers handle long content: `truncate`, `line-clamp-*`, or `overflow-wrap: break-word`
 - Flex children need `min-width: 0` to allow text truncation
-- Handle empty states—don't render broken UI for empty strings/arrays
+- Handle empty states, don't render broken UI for empty strings/arrays
 - User-generated content: anticipate short, average, and very long inputs
 
 ### Images
@@ -78,8 +80,9 @@ Read files, check against rules below. Output concise but comprehensive—sacrif
 
 ### Performance
 
-- Large lists (>50 items): virtualize (`svelte-virtual-list`, `content-visibility: auto`)
-- No layout reads in reactive statements (`getBoundingClientRect`, `offsetHeight`, `offsetWidth`, `scrollTop`)
+- Large lists (>50 items): virtualize with a maintained Svelte 5 virtual-list library, or `content-visibility: auto` (skips off-screen rendering)
+- No imperative layout reads in reactive code (`getBoundingClientRect`, `offsetHeight`, `offsetWidth`, `scrollTop`) — they force reflow
+- For reactive element/window dimensions, use ResizeObserver-backed bindings (`bind:clientWidth`/`clientHeight`/`offsetWidth`/`contentRect`; `bind:innerWidth`/`innerHeight`/`scrollY` on `<svelte:window>`)
 - Batch DOM reads/writes; avoid interleaving
 - Use `{@attach}` for DOM interactions instead of `$effect` reading layout
 - Add `<link rel="preconnect">` for CDN/asset domains
@@ -88,17 +91,17 @@ Read files, check against rules below. Output concise but comprehensive—sacrif
 
 ### Navigation & State
 
-- URL reflects state—filters, tabs, pagination, expanded panels in query params
+- URL reflects state, filters, tabs, pagination, expanded panels in query params
 - Links use `<a>` (Cmd/Ctrl+click, middle-click support)
-- Deep-link all stateful UI (use `$page.url.searchParams` or `goto` with query params)
-- Destructive actions need confirmation modal or undo window—never immediate
+- Deep-link all stateful UI (use `page.url.searchParams` from `$app/state`, or `goto` with query params)
+- Destructive actions need confirmation modal or undo window, never immediate
 
 ### Touch & Interaction
 
 - `touch-action: manipulation` (prevents double-tap zoom delay)
 - `-webkit-tap-highlight-color` set intentionally
 - `overscroll-behavior: contain` in modals/drawers/sheets
-- During drag: disable text selection, `inert` on dragged elements
+- During drag: disable text selection; `inert` on non-drop-target content (not the dragged element)
 
 ### Safe Areas & Layout
 
@@ -149,7 +152,7 @@ Read files, check against rules below. Output concise but comprehensive—sacrif
 - `$effect` for derived state (use `$derived` instead)
 - `on:click` instead of `onclick` (legacy Svelte 4 syntax)
 - `<slot>` instead of `{#snippet}` / `{@render}` (legacy Svelte 4 syntax)
-- `use:action` instead of `{@attach}` (legacy Svelte 4 syntax)
+- `use:action` instead of `{@attach}` (attachments, 5.29+, are the recommended replacement)
 
 ## Output Format
 

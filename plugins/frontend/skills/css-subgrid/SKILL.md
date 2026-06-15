@@ -46,7 +46,7 @@ CSS Subgrid lets grid children inherit parent track sizing, so inner content (ic
 ### How it works
 
 1. **Parent** defines columns with `auto-fill` + `minmax()` for responsive wrapping
-2. **Parent** does NOT need explicit `grid-template-rows` — implicit `auto` rows are created
+2. **Parent** does NOT need explicit `grid-template-rows`: implicit `auto` rows are created
 3. **Child** uses `grid-row: span N` (N = number of content sections per card)
 4. **Child** uses `grid-template-rows: subgrid` to inherit parent row tracks
 5. All cards in the same visual row share track heights, so content aligns
@@ -55,7 +55,7 @@ CSS Subgrid lets grid children inherit parent track sizing, so inner content (ic
 
 ### Column sizing: `minmax(min, max)` NOT `minmax(min, 1fr)`
 
-Using `1fr` as max stretches cards to fill available space — cards become too wide and look bad:
+Using `1fr` as max stretches cards to fill available space, cards become too wide and look bad:
 
 ```css
 /* BAD: cards stretch to fill row */
@@ -76,8 +76,8 @@ For card grids with capped max width, both work similarly. Prefer `auto-fill`.
 
 ### `span N` vs `1 / -1`
 
-- `grid-row: span 2` — works with implicit rows, cards wrap to new row groups naturally
-- `grid-row: 1 / -1` — only works with explicit rows, breaks when cards wrap
+- `grid-row: span 2`: works with implicit rows, cards wrap to new row groups naturally
+- `grid-row: 1 / -1`: only works with explicit rows, breaks when cards wrap
 
 **Always use `span N` for wrapping grids.**
 
@@ -85,7 +85,7 @@ For card grids with capped max width, both work similarly. Prefer `auto-fill`.
 
 Row subgrid + auto-fill columns **works** (the pattern above).
 
-Column subgrid + auto-fill rows **does NOT work** — you need explicit column counts with media queries for column subgrid.
+Column subgrid + auto-fill rows **does NOT work**, you need explicit column counts with media queries for column subgrid.
 
 ## Quick Reference
 
@@ -107,10 +107,10 @@ Column subgrid + auto-fill rows **does NOT work** — you need explicit column c
 
 ## Resources
 
-- [Learn CSS Subgrid — Ahmad Shadeed](https://ishadeed.com/article/learn-css-subgrid/) — comprehensive guide with card examples
-- [Brand New Layouts with CSS Subgrid — Josh W. Comeau](https://www.joshwcomeau.com/css/subgrid/) — covers column subgrid limitations
-- [CSS Subgrid — web.dev](https://web.dev/articles/css-subgrid) — browser support and basics
-- [Subgrid — MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Grid_layout/Subgrid) — reference documentation
+- [Learn CSS Subgrid: Ahmad Shadeed](https://ishadeed.com/article/learn-css-subgrid/), comprehensive guide with card examples
+- [Brand New Layouts with CSS Subgrid: Josh W. Comeau](https://www.joshwcomeau.com/css/subgrid/), covers column subgrid limitations
+- [CSS Subgrid: web.dev](https://web.dev/articles/css-subgrid), browser support and basics
+- [Subgrid: MDN](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Grid_layout/Subgrid), reference documentation
 
 ## Browser Support
 
@@ -118,6 +118,6 @@ Supported in all modern browsers (Chrome 117+, Firefox 71+, Safari 16+, Edge 117
 
 ## Related skills
 
-- `frontend:css-nesting` — Full CSS nesting workflow with specificity analysis and stylelint compliance.
-- `frontend:code-style-css` — CSS-specific code style rules (nesting, layout-only).
-- `frontend:pixel-perfect` — Pixel drift detection when modifying CSS or HTML element structure.
+- `frontend:css-nesting`: Full CSS nesting workflow with specificity analysis and stylelint compliance.
+- `frontend:code-style-css`: CSS-specific code style rules (nesting, layout-only).
+- `frontend:pixel-perfect`: Pixel drift detection when modifying CSS or HTML element structure.

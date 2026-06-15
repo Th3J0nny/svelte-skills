@@ -1,4 +1,4 @@
-# composition-svelte — rationalizations (counters)
+# composition-svelte: rationalizations (counters)
 
 Read this when: you catch yourself making one of the excuses below to skip a rule in SKILL.md or any reference file. Cross-reference the row's "Fix" column.
 
@@ -8,7 +8,7 @@ Read this when: you catch yourself making one of the excuses below to skip a rul
 | "The autofixer suggestion is just advisory" | Two `bind:this` advisories = architectural smell | `{@attach}` for element-augmenters; imperative mount for container-owners (`third-party.md`) |
 | "I'll add the third-party constructor in `$effect` so it reacts to changes" | The dep is fixed for the wrapper's lifetime | `onMount` + cleanup return (`lifecycle.md`) |
 | "I'll inline the markup into the Wrapper, it's only 3 lines" | The markup-only mount target is a distinct concern (separation of bridging logic from rendered markup) | Keep the markup-only `.svelte` file as a sibling in `<Feature>/`. See `third-party.md` "Markup-only discipline". |
-| "I'll use `{@attach}` to bridge a third-party widget — modern Svelte way" | `{@attach}` is for element-augmenters; library-managed elements use imperative `mount()` | Read the existing pattern first (`third-party.md`) |
+| "I'll use `{@attach}` to bridge a third-party widget, modern Svelte way" | `{@attach}` is for element-augmenters; library-managed elements use imperative `mount()` | Read the existing pattern first (`third-party.md`) |
 | "The bug only happens in one menu, the other menu is different" | Tabindex / focus / ESC patterns are shared | Grep for analogous; fix symmetrically |
 | "I'll call this `attach<Feature>` because it sets things up" | "Attach" implies Svelte `{@attach}`; this uses an event-subscription API | `subscribe<Feature>` |
 | "`el` is fine for an event arg" | `frontend:code-style` requires `element` | Rename |

@@ -6,7 +6,7 @@ user-invocable: true
 
 # Migration
 
-Framework upgrades, major dep bumps, config migrations. The core challenge is proving zero regressions — which requires baselines captured on the TRUE pre-change state.
+Framework upgrades, major dep bumps, config migrations. The core challenge is proving zero regressions, which requires baselines captured on the TRUE pre-change state.
 
 ## Rule Zero: Check Working Tree FIRST
 
@@ -17,17 +17,17 @@ git status
 git diff package.json
 ```
 
-**If `package.json` is already modified** — deps may already be upgraded. Baselines taken now reflect post-upgrade state and are WORTHLESS for comparison. You must restore old deps before capturing baselines (see Phase 3a).
+**If `package.json` is already modified**, deps may already be upgraded. Baselines taken now reflect post-upgrade state and are WORTHLESS for comparison. You must restore old deps before capturing baselines (see Phase 3a).
 
-**If `package.json` is clean** — capture all baselines before touching it.
+**If `package.json` is clean**, capture all baselines before touching it.
 
 This is non-negotiable. Baselines on upgraded deps cannot prove zero regressions. Ask yourself: "What state was the code in BEFORE any migration work started?" That is the state you baseline against.
 
 ## Phase 1: Research
 
-**REQUIRED:** Use `agent:research` skill. All four channels — local investigation, docs/MCPs, online research, verify and synthesize.
+**REQUIRED:** Use `agent:research` skill. All four channels, local investigation, docs/MCPs, online research, verify and synthesize.
 
-For each breaking change found in the migration guide, grep the codebase to check if it applies. Don't assume — verify.
+For each breaking change found in the migration guide, grep the codebase to check if it applies. Don't assume, verify.
 
 **Output:** A list of concrete changes needed, with file paths and line numbers.
 
@@ -47,11 +47,11 @@ pnpm install
 
 ### 3b: Capture Baselines
 
-1. **Build output** — full log, page count
-2. **Sitemap** — copy XML files, extract every `<loc>` URL to flat list
-3. **Screenshot every route** — Playwright MCP, every sitemap URL, assert no console errors
-4. **Measure page sections** — per `frontend:pixel-perfect`: `getBoundingClientRect()` on every visible section, save as JSON
-5. **Run existing tests** — save output, record pass/fail counts
+1. **Build output**: full log, page count
+2. **Sitemap**: copy XML files, extract every `<loc>` URL to flat list
+3. **Screenshot every route**: Playwright MCP, every sitemap URL, assert no console errors
+4. **Measure page sections**: per `frontend:pixel-perfect`: `getBoundingClientRect()` on every visible section, save as JSON
+5. **Run existing tests**: save output, record pass/fail counts
 
 ### 3c: Restore Upgraded State
 
@@ -64,11 +64,11 @@ pnpm install
 
 Existing tests probably don't cover all routes. Write new tests that:
 
-1. **Route coverage** — read sitemap dynamically, navigate every URL, assert each loads with content
-2. **Section coverage** — assert each page section exists and is visible
-3. **i18n coverage** — test both language variants
+1. **Route coverage**: read sitemap dynamically, navigate every URL, assert each loads with content
+2. **Section coverage**: assert each page section exists and is visible
+3. **i18n coverage**: test both language variants
 
-Run new tests — they must pass on current state BEFORE any migration edits.
+Run new tests, they must pass on current state BEFORE any migration edits.
 
 ## Phase 5: Make Changes
 
@@ -78,23 +78,23 @@ Per `frontend:validate`: edit ONE file, validate (build + lint + type-check), co
 
 Per `agent:done`:
 
-1. **Build** — page count must match baseline
-2. **Sitemap diff** — must be identical to baseline URLs
-3. **Run ALL tests** — old + new regression tests
-4. **Screenshot every route** — compare to baseline
-5. **Measure sections** — per `frontend:pixel-perfect`, report diff table, 0px diff required
-6. **Full validation** — lint, type-check, svelte-check, exit 0
-7. **Report with proof** — exit codes, page counts, sitemap diff, test results, measurement table
+1. **Build**: page count must match baseline
+2. **Sitemap diff**: must be identical to baseline URLs
+3. **Run ALL tests**: old + new regression tests
+4. **Screenshot every route**: compare to baseline
+5. **Measure sections**: per `frontend:pixel-perfect`, report diff table, 0px diff required
+6. **Full validation**: lint, type-check, svelte-check, exit 0
+7. **Report with proof**: exit codes, page counts, sitemap diff, test results, measurement table
 
 ## Referenced Skills
 
 Not optional during migration:
 
-- `agent:research` — Phase 1
-- `frontend:pixel-perfect` — Phase 3b and 6 measurements
-- `frontend:validate` — Phase 5 per-file validation
-- `agent:done` — Phase 6 completion checklist
-- `frontend:playwright` — all browser verification
+- `agent:research`: Phase 1
+- `frontend:pixel-perfect`: Phase 3b and 6 measurements
+- `frontend:validate`: Phase 5 per-file validation
+- `agent:done`: Phase 6 completion checklist
+- `frontend:playwright`: all browser verification
 
 ## Anti-Patterns
 
@@ -102,7 +102,7 @@ These are real failures from an actual migration attempt:
 
 | Failure                                        | Why It's Wrong                                                        |
 | ---------------------------------------------- | --------------------------------------------------------------------- |
-| Taking "before" baselines after deps upgraded  | Baselines reflect post-upgrade state — comparison is meaningless      |
+| Taking "before" baselines after deps upgraded  | Baselines reflect post-upgrade state, comparison is meaningless      |
 | Assuming version numbers instead of asking     | User wanted Node 24, not 22. ASK.                                     |
 | "Run build and check browser" as verification  | Proves nothing about regressions without baselines to compare against |
 | Not using sitemap as route source of truth     | Guessing at routes misses pages                                       |
@@ -111,7 +111,7 @@ These are real failures from an actual migration attempt:
 | Skipping section measurements                  | Screenshots alone prove nothing per pixel-perfect                     |
 | Not checking `git status` first                | Led to worthless baselines                                            |
 
-## Reference: Example Plan (Astro 5 → 6)
+## Reference: Example Plan (Astro 5 to 6)
 
 ```markdown
 # Astro 6 Migration Plan

@@ -1,6 +1,6 @@
 ---
 name: validate-file
-description: "Validate edited files — lint .svelte/.ts/.js, test stories, lint markdown. Auto-invoke after ANY file edit before declaring done. User-invocable as /validate-file [files]."
+description: "Validate edited files, lint .svelte/.ts/.js, test stories, lint markdown. Auto-invoke after ANY file edit before declaring done. User-invocable as /validate-file [files]."
 argument-hint: "[files]"
 user-invocable: true
 ---
@@ -13,8 +13,8 @@ Run the correct validation for every file you edited OR have been prompted to re
 
 Before and during validation, apply the rules from these skills:
 
-- `frontend:code-style` — applies to ALL files (variable naming, braces, data attributes)
-- `svelte-5:code-style-svelte` — applies to `.svelte` and `.svelte.ts`/`.svelte.js` files
+- `frontend:code-style`: applies to ALL files (variable naming, braces, data attributes)
+- `svelte-5:code-style-svelte`: applies to `.svelte` and `.svelte.ts`/`.svelte.js` files
 
 ## Hard rules
 
@@ -23,13 +23,13 @@ Before and during validation, apply the rules from these skills:
 - **NEVER add `eslint-disable` without a FIXME or TODO.** Every
   disable must explain what needs to be fixed and why it can't
   be fixed now. Bare disables are cheating.
-- **Fix ALL lint errors in the file** — not just the ones you
+- **Fix ALL lint errors in the file**: not just the ones you
   introduced. If you touch a file and lint reports errors, fix
   them. No "pre-existing" excuses.
 
 ## When to run
 
-After EVERY file edit. Not at the end of a batch — after EACH edit.
+After EVERY file edit. Not at the end of a batch, after EACH edit.
 If you edited 3 files, you validate 3 times (or group by tool).
 
 ## What to run
@@ -37,7 +37,7 @@ If you edited 3 files, you validate 3 times (or group by tool).
 ### Batch-lint multiple files
 
 To lint every file currently staged in git, use `pnpm lint:staged`.
-To also include commits ahead of the upstream branch (or `origin/main` as fallback), use `pnpm lint:staged --committed` — useful right before pushing.
+To also include commits ahead of the upstream branch (or `origin/main` as fallback), use `pnpm lint:staged --committed`, useful right before pushing.
 
 `lint:staged` calls into the same `lint-file` chain documented below, so all the per-file rules still apply.
 
@@ -50,12 +50,12 @@ To also include commits ahead of the upstream branch (or `origin/main` as fallba
 | `.test.ts`, `.spec.ts`  | `pnpm lint:tests`                                       | Lints all test files                              |
 | `.md`                   | `npx markdownlint-cli <path>`                           | Fix all errors before done                        |
 | `.yml`/`.yaml` (CI)     | Simulate with `CI=true GITHUB_ACTIONS=true` locally     | Never guess at CI behavior                        |
-| `vite.config.ts`        | `npx tsgo -p tsconfig.node.json --noEmit`               | Separate tsconfig — `pnpm check` won't catch it   |
+| `vite.config.ts`        | `npx tsgo -p tsconfig.node.json --noEmit`               | Separate tsconfig, `pnpm check` won't catch it   |
 
-### CSS/layout changes → invoke `frontend:playwright` + `frontend:pixel-perfect`
+### CSS/layout changes: invoke `frontend:playwright` + `frontend:pixel-perfect`
 
-Any edit that touches styles — `.css`, `.scss`, or `<style>` blocks
-in `.svelte` files — requires visual regression verification via
+Any edit that touches styles, `.css`, `.scss`, or `<style>` blocks
+in `.svelte` files, requires visual regression verification via
 the `frontend:playwright` and `frontend:pixel-perfect` skills. Lint alone cannot
 catch visual regressions. Measure BEFORE, apply change, measure
 AFTER, report a diff table with zero tolerance.
@@ -64,19 +64,19 @@ AFTER, report a diff table with zero tolerance.
 
 For component + story pairs, follow this exact sequence:
 
-1. **Test first:** `pnpm test:story <Pattern>` — see the failure
-2. **Read the error** — understand root cause
-3. **Fix the component/story** — context guards, prop guards, etc.
+1. **Test first:** `pnpm test:story <Pattern>`: see the failure
+2. **Read the error**: understand root cause
+3. **Fix the component/story**: context guards, prop guards, etc.
 4. **LINT BEFORE TESTING:** `pnpm lint:file <component> <story>`
-   — must exit 0 BEFORE running tests. Lint catches type errors
+   must exit 0 BEFORE running tests. Lint catches type errors
    that would crash at runtime. Testing unlinted code wastes time.
    Fix ALL errors, not just yours.
 5. **Run the Svelte autofixer** (`mcp__svelte__svelte-autofixer`) on `.svelte`, `.svelte.ts`, and `.svelte.js` files that
    use Svelte 5 patterns ($state, $derived, $props, $effect,
-   $bindable, snippet, {@render}). Catches slot→children,
-   stores→runes, and other migration issues. Skip for pure
+   $bindable, snippet, {@render}). Catches slot to children,
+   stores to runes, and other migration issues. Skip for pure
    Svelte 4 files (export let, $:, <slot />).
-6. **Test AFTER lint:** `pnpm test:story <Pattern>` — only test
+6. **Test AFTER lint:** `pnpm test:story <Pattern>`: only test
    after lint is clean. If lint found type issues, the test on
    unfixed code was meaningless.
 7. **Review component props:** check for svelecte, autocomplete,
@@ -93,13 +93,13 @@ If you modify a **shared component** (context wrapper, utility
 component, store, type file, or anything imported by multiple
 consumers), you MUST verify no regressions across ALL consumers:
 
-- `pnpm test:storybook` — all storybook tests
-- `pnpm test` — all unit/browser tests
+- `pnpm test:storybook`: all storybook tests
+- `pnpm test`: all unit/browser tests
 - Playwright browser check on your dev server if the component is
   used in the running app
 
 A change to a shared wrapper, type, or store can silently break
-every consumer — not just the story you're working on.
+every consumer, not just the story you're working on.
 
 ## How to determine files
 

@@ -1,6 +1,6 @@
 ---
 name: css-nesting
-description: How to convert flat CSS to nested CSS using & while satisfying stylelint's no-descending-specificity and no-duplicate-selectors rules. Use this skill whenever nesting CSS selectors, refactoring flat CSS to use &, or encountering stylelint specificity/duplicate errors after nesting. Auto-invoke when editing <style> blocks and the code-style rule says to nest with &.
+description: Convert flat CSS to nested & syntax while satisfying stylelint's no-descending-specificity and no-duplicate-selectors rules. Use when nesting selectors, refactoring flat CSS to &, or fixing stylelint specificity/duplicate errors after nesting.
 user-invocable: true
 ---
 
@@ -73,11 +73,11 @@ Selectors matching .item:
 
 Place blocks so that within each element group, specificity ascends in source order. Key principles:
 
-**Nest children inside parents** to match DOM hierarchy. `& .item` inside `.wrapper` resolves to `.wrapper .item` (0,2,0) — this increases specificity vs flat `.item` (0,1,0), which is fine as long as the ordering still ascends.
+**Nest children inside parents** to match DOM hierarchy. `& .item` inside `.wrapper` resolves to `.wrapper .item` (0,2,0), this increases specificity vs flat `.item` (0,1,0), which is fine as long as the ordering still ascends.
 
 **High-specificity cross-cutting selectors go last.** If `.container:has(:hover) .wrapper:not(...)` at (0,4,0) matches `.wrapper`, it must appear in source after all other `.wrapper`-matching selectors. Since it's nested under `.container`, put the `.container` block after the `.wrapper` block.
 
-**One block per selector.** Can't have two `.container` blocks — use one block with all its rules.
+**One block per selector.** Can't have two `.container` blocks, use one block with all its rules.
 
 **`@media` nests inside its parent block.** `@media` inside `.wrapper { }` avoids both duplicate-selector issues and keeps related rules together.
 
@@ -99,14 +99,14 @@ Never do incremental edits. Write the complete nested CSS as a single replacemen
 | Class, attribute, pseudo-class (`.foo`, `:hover`, `:nth-child()`) | (0,1,0)                                      |
 | ID (`#bar`)                                                       | (1,0,0)                                      |
 | `:is()`, `:not()`, `:has()`                                       | Highest specificity of their argument        |
-| `&` (nesting selector)                                            | Same as `:is()` — takes parent's specificity |
+| `&` (nesting selector)                                            | Same as `:is()`, takes parent's specificity |
 | `~`, `+`, `>`, ` ` (combinators)                                  | Add nothing                                  |
 
 Nesting with `&` uses `:is()` wrapping semantics per [CSS Nesting Module Level 1](https://www.w3.org/TR/css-nesting-1/). The `&` selector adopts the highest specificity from the parent selector list.
 
 ## Example: The Hard Case
 
-This is the pattern that breaks naive nesting — a high-specificity desaturate rule that crosses parent-child boundaries:
+This is the pattern that breaks naive nesting, a high-specificity desaturate rule that crosses parent-child boundaries:
 
 **Problem:** `.container:has(:hover) .child:not(:has(:hover))` at (0,4,0) matches `.child` elements. If `.container` block comes first with this rule inside, then `.child` block comes second at (0,1,0), that's descending specificity.
 
@@ -167,4 +167,4 @@ This is the pattern that breaks naive nesting — a high-specificity desaturate 
 - [MDN: CSS Nesting and Specificity](https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Nesting/Nesting_and_specificity)
 - [stylelint: no-descending-specificity](https://stylelint.io/user-guide/rules/no-descending-specificity/)
 - [stylelint: no-duplicate-selectors](https://stylelint.io/user-guide/rules/no-duplicate-selectors/)
-- [HoneycombGrid plan](references/honeycomb-plan.md) — real-world example: full specificity analysis and solution for a complex honeycomb grid with cross-cutting desaturate rule
+- [Honeycomb grid example](references/honeycomb-plan.md): worked specificity analysis and solution for a grid with a cross-cutting desaturate rule

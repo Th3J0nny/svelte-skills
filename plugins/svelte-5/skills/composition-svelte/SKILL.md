@@ -1,6 +1,6 @@
 ---
 name: composition-svelte
-description: "Use when composing a Svelte 5 feature out of a provider/wrapper component, content snippets (default, named, or mixed), reactive state, and optional bridging into a third-party DOM library (maplibre, leaflet, d3, tippy, popper). Triggers: designing any provider or wrapper (popup, menu, drawer, modal, tooltip, panel, accordion, slide-in), reaching for `bind:this`, reaching for `$effect` for one-shot setup, prop-drilling a global store / appState value, naming a new component `Default`/`Feature`/`Wrapper` without checking codebase patterns, mounting Svelte content into a non-Svelte container, choosing default vs named snippets, fixing a UX bug in one of several visually-analogous components, or building a feature whose `<style>` block is about to use `:global()`."
+description: "Use when composing a Svelte 5 feature from provider/wrapper components, content snippets, reactive state, or third-party DOM bridging (maplibre, leaflet, d3, tippy, popper). Covers overlay wrappers, snippet APIs, and state location."
 user-invocable: true
 ---
 
@@ -31,16 +31,16 @@ Answer in writing BEFORE generating files. Full tables and pointers in `referenc
 
 1. **Shape**: Composition shape / Non-Svelte Host?
 2. **Snippet API**: default `children`, named snippets, or mix?
-3. **State location** — where each piece of state lives. Options can coexist; pick what fits each piece. `.svelte.ts` modules (module-level `$state` exports, classes with `$state` fields), component-local `$state`, context (`createContext`), existing global state.
+3. **State location**: where each piece of state lives. Options can coexist; pick what fits each piece. `.svelte.ts` modules (module-level `$state` exports, classes with `$state` fields), component-local `$state`, context (`createContext`), existing global state.
 
-If intent is ambiguous, ask via `AskUserQuestion` — never infer silently.
+If intent is ambiguous, ask via `AskUserQuestion`, never infer silently.
 
 ## Quick reference
 
 | Need | Read |
 | --- | --- |
 | Picking shape and snippet/state design | `references/decisions.md` |
-| Composition shape — seven-role contract + folder structure (covers both caller-content and view-dispatcher / Provider behaviour) | `references/composition-shape.md` |
+| Composition shape, seven-role contract + folder structure (covers both caller-content and view-dispatcher / Provider behaviour) | `references/composition-shape.md` |
 | Non-Svelte Host shape | `references/non-svelte-host.md` |
 | Lifecycle rune choice | `references/lifecycle.md` |
 | Bridging to a third-party DOM library | `references/third-party.md` |
@@ -50,18 +50,18 @@ If intent is ambiguous, ask via `AskUserQuestion` — never infer silently.
 
 ## Naming
 
-- **Files** by ROLE. `Default.svelte` alone is too vague — `DefaultItems.svelte` reads. `Feature.svelte` / `Wrapper.svelte` are banned for new code.
+- **Files** by ROLE. `Default.svelte` alone is too vague: `DefaultItems.svelte` reads. `Feature.svelte` / `Wrapper.svelte` are banned for new code.
 - **Function verbs**: `subscribeX/unsubscribeX` for event subscription; `attachX/detachX` for Svelte `{@attach}` lifecycle; `mountX/unmountX` for component lifecycle; `createX/destroyX` for factory pairs. Don't conflate.
 - **Variables** per `frontend:code-style`: `element` not `el`; `event` not `e`; `result` not `res`.
 - **Utils** grouped by CATEGORY (`$utils/domActions.ts` for all DOM attachments). NOT one file per export.
 
 ## Util extraction
 
-When a pattern appears in 2+ components, extract to `$utils/<category>.ts`. Don't pre-extract — first use is inline; second triggers the move.
+When a pattern appears in 2+ components, extract to `$utils/<category>.ts`. Don't pre-extract, first use is inline; second triggers the move.
 
 ## Tooling
 
-Multi-file Svelte refactors → `svelte:svelte-file-editor` subagent (per `agent:before-you-act` "Consider before doing it yourself"). Validates each file via `mcp__svelte__svelte-autofixer`.
+Delegate creating, editing, or reviewing any `.svelte` / `.svelte.ts` / `.svelte.js` file to the `svelte:svelte-file-editor` subagent (per `agent:before-you-act` "Consider before doing it yourself"), multi-file refactors most of all. The subagent runs in its own context window, so its docs lookup (`mcp__svelte__get-documentation`) and autofixer iteration (`mcp__svelte__svelte-autofixer`) don't spend the main agent's context.
 
 ## Symmetric bugs
 
@@ -69,13 +69,13 @@ UX bugs in overlay-style components almost always span ALL overlay-style compone
 
 ## Done close-path matrix
 
-Overlay-specific. Other feature types (forms, tables, panels without close behaviour) need their own done-matrix — write one local to that feature, mirroring this structure (interactions → expected post-state, exit paths, regression neighbours). Before declaring an overlay feature done, run ALL of these in a real browser via Playwright MCP:
+Overlay-specific. Other feature types (forms, tables, panels without close behaviour) need their own done-matrix, write one local to that feature, mirroring this structure (interactions and their expected post-state, exit paths, regression neighbours). Before declaring an overlay feature done, run ALL of these in a real browser via Playwright MCP:
 
-- [ ] X / close button → wrapper popup + auxiliary elements both cleared
-- [ ] click-outside / `closeOnClick` → both cleared
-- [ ] ESC → both cleared
-- [ ] Each interactive child click → both cleared
-- [ ] Opening another overlay of the same kind → opens through the Controller's handler, which closes the prior overlay automatically (see `references/composition-shape.md` Controller)
+- [ ] X / close button: wrapper popup + auxiliary elements both cleared
+- [ ] click-outside / `closeOnClick`: both cleared
+- [ ] ESC: both cleared
+- [ ] Each interactive child click: both cleared
+- [ ] Opening another overlay of the same kind: opens through the Controller's handler, which closes the prior overlay automatically (see `references/composition-shape.md` Controller)
 - [ ] Analogous components have the same UX behaviour
 - [ ] `mcp__svelte__svelte-autofixer`: zero new issues. `$effect calling function` advisories on imperative third-party calls are OK; `bind:this` suggestions are NOT.
 - [ ] Vitest: green for the file + regression neighbours
@@ -83,7 +83,7 @@ Overlay-specific. Other feature types (forms, tables, panels without close behav
 
 Per `agent:done`: declaring done before this matrix is fraudulent. Per `agent:asshole`: don't dismiss failures as "not my problem".
 
-## Red flags — STOP and reconsider
+## Red flags: STOP and reconsider
 
 | Red flag | Means | Fix |
 | --- | --- | --- |
@@ -94,8 +94,8 @@ Per `agent:done`: declaring done before this matrix is fraudulent. Per `agent:as
 | `$effect(() => new ThirdPartyThing(...))` for one-shot setup | Wrong rune | `onMount` + cleanup return |
 | `$effect` writing to `$state` | Wrong rune | `$derived` |
 | Fixing ESC for one menu only | Other menus have the same bug | Symmetric coverage |
-| Two overlays visible simultaneously | Opened directly instead of through the Controller's handler | Funnel every open through the Controller's handler — it closes any prior overlay before opening the new one. See `references/composition-shape.md` Controller. |
-| Auxiliary element (marker dot, badge, etc.) still visible after popup auto-close | Visibility gated on `popup.isOpen()` — but the third-party lib fires 'close' AFTER `popup.remove()` | Reconcile unconditionally on `open`; `addTo`/`remove` are idempotent |
+| Two overlays visible simultaneously | Opened directly instead of through the Controller's handler | Funnel every open through the Controller's handler, it closes any prior overlay before opening the new one. See `references/composition-shape.md` Controller. |
+| Auxiliary element (marker dot, badge, etc.) still visible after popup auto-close | Visibility gated on `popup.isOpen()`, but the third-party lib fires 'close' AFTER `popup.remove()` | Reconcile unconditionally on `open`; `addTo`/`remove` are idempotent |
 | Snippet inlined in consumer feels too long | Time to extract | `<script module>` re-export, `references/composition-shape.md` |
 | `attachX` named but uses `map.on()` | Verb mismatch | `subscribeX` |
 | `:global(button)` in a wrapper's `<style>` | Wrong place to style children | `references/css-scope.md` |

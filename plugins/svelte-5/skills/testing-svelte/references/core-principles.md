@@ -31,21 +31,20 @@ page.getByRole('link', { name: 'Home' }).nth(1); // Second element
 page.getByRole('link', { name: 'Home' }).last();
 ```
 
-## 3. Use `untrack()` for $derived Values
+## 3. Read `$derived` Values Directly
 
-Svelte 5 runes require `untrack()` when accessing `$derived` values in
-tests:
+Defensive convention: [sveltest](https://sveltest.dev/docs/runes-testing) wraps `$derived` reads in `untrack()` to avoid leaking test-time reads into reactive scopes.
+
+Access `$derived` values directly in tests — no `untrack()` needed:
 
 ```typescript
-import { untrack } from 'svelte';
-
 // ✅ Access $derived values
-const value = untrack(() => component.derivedValue);
+const value = component.derivedValue;
 expect(value).toBe(42);
 
-// ✅ For getters: get function first, then untrack
+// ✅ For getters: call the function directly
 const derivedFn = component.computedValue;
-expect(untrack(() => derivedFn())).toBe(expected);
+expect(derivedFn()).toBe(expected);
 ```
 
 ## 4. Real FormData/Request Objects

@@ -1,4 +1,4 @@
-# composition-svelte — Non-Svelte Host shape
+# composition-svelte: Non-Svelte Host shape
 
 Read this when: you've picked the Non-Svelte Host shape per `decisions.md`.
 
@@ -12,7 +12,7 @@ A single Svelte component imperatively mounts many child components into a non-S
 
 ## When NOT to use this
 
-- Single overlays or multi-view features inside a Svelte tree — use the Composition shape (`composition-shape.md`).
+- Single overlays or multi-view features inside a Svelte tree: use the Composition shape (`composition-shape.md`).
 
 ## Folder structure
 
@@ -33,7 +33,7 @@ tests/browser/<feature>/
 └── <Host>.test.ts               ← Svelte component browser test — external
 ```
 
-- `.svelte` components must be PascalCase; files using runes need the `.svelte.ts` extension — Svelte requirements.
+- `.svelte` components must be PascalCase; files using runes need the `.svelte.ts` extension: Svelte requirements.
 - Other filenames follow your project / TS convention (types: `<Host>.model.ts`, `types.ts`, `<Host>.d.ts`, etc.).
 - Pure-TS unit tests co-locate next to the file they test.
 - Svelte component browser tests live externally in `tests/browser/<feature>/`. Stories double as browser tests via `svelte-5:storybook-vitest`. See `svelte-5:testing-svelte`.
@@ -58,4 +58,4 @@ The host runs an imperative per-item lifecycle that diffs data against the curre
 </script>
 ```
 
-`flushSync()` is only needed when the mounted child has effects that must run before the third-party library adopts the element. A markup-only child (no `<script>`, per the markup-only discipline in `third-party.md`) has nothing to flush — skip the call.
+`flushSync()` is only needed when the mounted child has effects that must run before the third-party library adopts the element. A markup-only child (no `<script>`, per the markup-only discipline in `third-party.md`) has nothing to flush, skip the call.

@@ -1,12 +1,12 @@
 ---
 name: pixel-perfect
-description: Pixel drift detection — mandatory measurement workflow for any CSS or HTML element change. Auto-invoke when editing CSS, changing HTML elements, or replacing DOM structures.
+description: Pixel drift detection, mandatory measurement workflow for any CSS or HTML element change. Auto-invoke when editing CSS, changing HTML elements, or replacing DOM structures.
 user-invocable: true
 ---
 
 # Pixel-Perfect: Mandatory Measurement Workflow
 
-When making **any** CSS change or HTML element swap (e.g. `<dl>` to `<ul>`, `<div>` to `<section>`), follow this workflow exactly. Screenshots alone prove NOTHING about pixel parity — only measured numbers do.
+When making **any** CSS change or HTML element swap (e.g. `<dl>` to `<ul>`, `<div>` to `<section>`), follow this workflow exactly. Screenshots alone prove NOTHING about pixel parity, only measured numbers do.
 
 ## Step 1: Measure BEFORE (while original code is still in place)
 
@@ -29,7 +29,7 @@ getComputedStyle(el).fontSize
 
 ### Critical: Measure ACTUAL computed styles, not what you think the CSS does
 
-Global styles, resets, and browser defaults frequently override scoped CSS. A `<dl>` might render as `display: grid; gap: 16px` even though scoped CSS says `display: flex; gap: 8px`. **Never assume — always measure.**
+Global styles, resets, and browser defaults frequently override scoped CSS. A `<dl>` might render as `display: grid; gap: 16px` even though scoped CSS says `display: flex; gap: 8px`. **Never assume, always measure.**
 
 ## Step 2: Make the code change
 
@@ -76,6 +76,6 @@ If **any** measurement differs by even 1px:
 ## NEVER
 
 - NEVER claim "no visual regression" or "looks identical" from eyeballing screenshots
-- NEVER skip the BEFORE measurement — you cannot compare without a baseline
-- NEVER report "approximately the same" — report exact pixel values
-- NEVER proceed if you don't have BEFORE numbers — revert and measure first
+- NEVER skip the BEFORE measurement: you cannot compare without a baseline
+- NEVER report "approximately the same": report exact pixel values
+- NEVER proceed if you don't have BEFORE numbers: revert and measure first
