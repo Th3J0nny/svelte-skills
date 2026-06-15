@@ -26,6 +26,8 @@ Invoke these at the indicated points. This skill says WHEN; they say HOW.
 | `frontend:validate-file` | After EVERY file edit | this marketplace |
 | `frontend:migration` | Framework-agnostic phases this skill builds on | this marketplace |
 
+Prefer delegating each `.svelte` create/edit/review to the `svelte:svelte-file-editor` subagent (plugin `svelte/svelte`). It runs in its own context window, so its docs lookup and autofixer iteration don't spend the main agent's context during a long migration. The companion skills above still say WHEN; the subagent is where the per-file edit happens.
+
 ## Phase 1: Capture baselines BEFORE any code changes
 
 Nothing gets edited until baselines are recorded.

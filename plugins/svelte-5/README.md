@@ -5,7 +5,7 @@ Claude Code plugin for Svelte-specific development workflows. Part of the [svelt
 ## Dependencies
 
 - **`frontend` plugin** -- skills reference `frontend:validate`, `frontend:playwright`, and others. Install it first.
-- **Svelte MCP plugin** (`svelte/svelte`) -- required for autofixer and docs lookup.
+- **Svelte MCP plugin** (`svelte/svelte`) -- required for the autofixer, docs lookup, and the `svelte:svelte-file-editor` subagent. See the [official Svelte AI tools docs](https://svelte.dev/docs/ai/overview).
 
 For installation and setup, see the [root README](https://github.com/fubits1/svelte-skills#readme).
 

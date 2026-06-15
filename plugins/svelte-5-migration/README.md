@@ -32,7 +32,7 @@ This plugin depends on **all three** other plugins in the marketplace:
 
 It also requires two MCP servers:
 
-- **Svelte MCP** (`svelte/svelte`) -- for the autofixer and official docs lookup.
+- **Svelte MCP** (`svelte/svelte`) -- for the autofixer, official docs lookup, and the `svelte:svelte-file-editor` subagent. See the [official Svelte AI tools docs](https://svelte.dev/docs/ai/overview).
 - **Playwright MCP** -- for baseline screenshots and post-migration verification.
 
 The skill orchestrates all 13 companion skills from the other plugins. The companion skills table in [`SKILL.md`](skills/migration-svelte-5/SKILL.md) maps each skill to the point in the migration where it should be invoked.

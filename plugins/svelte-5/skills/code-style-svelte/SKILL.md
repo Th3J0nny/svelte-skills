@@ -112,5 +112,6 @@ Excluded: pages, layouts, tests, and stories (`.stories.svelte`) do not need thi
 - `frontend:code-style`: General code style rules (variable naming, braces, data attributes). Applies to all code including Svelte.
 - `svelte:svelte-code-writer`: Svelte 5 documentation lookup and code analysis. MUST invoke when creating or editing `.svelte` / `.svelte.ts` / `.svelte.js` files.
 - `svelte:svelte-core-bestpractices`: Reactivity, events, styling, and integration patterns for modern Svelte.
+- `svelte:svelte-file-editor`: Svelte 5 subagent. Delegate `.svelte` / `.svelte.ts` / `.svelte.js` create/edit/review to it (separate context window) instead of editing inline when practical.
 - `svelte-5:testing-svelte`: Vitest + Playwright testing patterns for Svelte 5 components.
 - `frontend:css-nesting`: CSS nesting rules.
