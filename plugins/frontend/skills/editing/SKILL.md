@@ -33,23 +33,19 @@ user-invocable: true
   this.activePopup = popup
   ```
 
-- **Comments must be noise-free and concise.** A comment must say WHY, not WHAT: the code already says what. Never restate what the code does in English. Never add filler like "fire-and-forget", "for safety", "just in case". If a comment doesn't teach the reader something they can't see from the code, delete it. Every token in a comment must earn its place.
+- **A comment you write or touch defaults to DELETE: it earns its place or it goes.** This removes only noise: information-bearing comments are protected by the never-remove rule below, which outranks it. For the survival test that decides whether a comment earns its place, the ban-list, and the removal procedure, see [references/comments.md](references/comments.md).
 
   ```typescript
   // ❌ BAD: restates what void does
   // fire-and-forget the unmount promise
   void unmount(marker._popupComponent);
 
-  // ❌ BAD: vague filler
-  // no outro transition to wait for in tests
-  void unmount(marker._popupComponent);
-
   // ✅ GOOD: says WHY the unusual syntax exists
-  // svelte 5 unmount() is async — void satisfies no-floating-promises
+  // svelte 5 unmount() is async, void satisfies no-floating-promises
   void unmount(marker._popupComponent);
   ```
 
-- NEVER remove existing comments: not with Write, not with Edit, not ever. Modifying a comment is OK, but NEVER lose information from it (e.g. removing a keyword like HINT, TODO, or a cross-reference). If adding context, append, don't replace. Diff after to check.
+- NEVER remove an existing information-bearing comment: not with Write, not with Edit, not ever. This outranks the default-DELETE above: when a comment carries information (a keyword like HINT/TODO/FIXME, a cross-reference, a non-obvious WHY), it is protected and default-DELETE does not touch it. Modifying such a comment is OK, but NEVER lose information from it. If adding context, append, don't replace. Diff after to check.
 - **TODO/comment placement:** put the comment directly above the line it describes, not somewhere else. Include the replacement command in the comment so whoever reads it knows exactly what to do. Never write "see TODO above": if the reader has to search for context, the comment is useless. For each TODO - one block, one location, full context.
 - Never use `any`, `unknown`, `ts-ignore`, or `eslint-disable`: fix the actual issue. Never use eslint-disable with fake justifications (e.g. "reserved for future", "API consistency"). If code is unused, delete it or wire it up.
 - Refactors: grep entire codebase for ALL occurrences FIRST, then fix in one pass. Before removing any conditional logic, enumerate ALL callers and triggers (click, back/forward, programmatic navigation, keyboard, etc.). If ANY trigger still needs the old logic, keep it.
