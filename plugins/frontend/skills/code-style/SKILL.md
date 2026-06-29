@@ -62,7 +62,9 @@ One word, not two: `toggle` already means open-if-closed/close-if-open. Don't wr
 
 Plural follows the work: if a function grows to handle N where it handled 1, rename. `detachPopup` that now detaches info + context popups is `detachPopups`.
 
-## TypeScript: `type` over `interface`
+## TypeScript
+
+### `type` over `interface`
 
 Use `type` for object shapes. Never use `interface` unless extending a third-party interface.
 
@@ -79,6 +81,10 @@ type Milestone = {
   label: string
 }
 ```
+
+### Private methods in classes
+
+Private methods should be prefixed with `#`. Do not use `private`. `#` is preserved as private at runtime, `private` is stripped at compile time.
 
 ## CSS Nesting
 
