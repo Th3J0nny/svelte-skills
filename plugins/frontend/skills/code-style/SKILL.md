@@ -82,9 +82,9 @@ type Milestone = {
 }
 ```
 
-### Private methods in classes
+### Private members in classes
 
-Private methods should be prefixed with `#`. Do not use `private`. `#` is preserved as private at runtime, `private` is stripped at compile time.
+Private class members (fields and methods) should be prefixed with `#`, never `private`. `#` is enforced at runtime; `private` is compile-time only.
 
 ## CSS Nesting
 
